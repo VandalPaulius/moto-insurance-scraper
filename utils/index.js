@@ -1,0 +1,1 @@
+exports.timing = require('./timing');
