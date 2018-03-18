@@ -5,9 +5,6 @@ const puppeteer = require('puppeteer');
 const utils = require('./utils');
 const navigation = require('./navigation');
 
-
-
-
 const scrape = async () => {
     console.log('scrape it');
     const browser = await puppeteer.launch({
@@ -23,6 +20,8 @@ const scrape = async () => {
 
     await navigation.main.login(page);
     await utils.timing.show(page);
+
+    await navigation.dashboard.removeSuperfluousQuotes(page);
 
     // await navigation.main.logout(page);
     // await browser.close();
