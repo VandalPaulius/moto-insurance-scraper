@@ -23,6 +23,8 @@ const scrape = async () => {
 
     await navigation.dashboard.removeSuperfluousQuotes(page);
 
+    await navigation.dashboard.newQuote(page);
+
     // await navigation.main.logout(page);
     // await browser.close();
 }
