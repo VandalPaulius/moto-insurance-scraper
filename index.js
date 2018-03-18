@@ -51,6 +51,14 @@ const login = async (page) => {
     await page.click(selectors.signIn);
 }
 
+const logout = async (page) => {
+    const selectors = {
+        signOut: 'body > header > div.header-content.fullwidth > div > div > div.sign-out-header > a'
+    }
+
+    await page.click(selectors.signOut);
+}
+
 const scrape = async () => {
     console.log('scrape it');
     const browser = await puppeteer.launch({
@@ -59,16 +67,16 @@ const scrape = async () => {
     });
     const page = await browser.newPage();
 
-    await page.setViewport({width: 1000, height: 500})
+    await page.setViewport({width: 1200, height: 500})
     await page.goto(process.env.URL_TO_SCRAPE);
 
     await homeToLogin(page);
 
-    console.log('dalykai')
     await login(page);
     await show(page);
 
-    //browser.close();
+    // await logout(page);
+    // await browser.close();
 }
 
 scrape().then((values) => {
