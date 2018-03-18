@@ -5,6 +5,23 @@ const puppeteer = require('puppeteer');
 const utils = require('./utils');
 const navigation = require('./navigation');
 
+const inputRange = {
+    quoteDetails: {
+        personalDetails: {
+            title: ['Mr', 'Miss'], // 'all'; [0, 2]
+            maritalStatus: ['Married', 'Single'], // 'all'; [0, 1]
+            ukResidentFrom: { // 'birth'
+                month: 12,
+                year: 1990
+            },
+            fullTimeEmployment: ['Employed', 'Unemplyed', 'Self-Emplyed'], // 'all'; [0, 1, 8]
+        },
+        partTimeEmploymentLess16Hrs: false, // true,
+        licenceType: ['UK Full Bike', 'EU Full Bike'], // 'all'; [0, 5],
+        selectedLicenceLength: ['Less than 1', '1'], // 'all'; [0, 1],
+    }
+}
+
 const scrape = async () => {
     console.log('scrape it');
     const browser = await puppeteer.launch({
