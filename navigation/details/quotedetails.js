@@ -116,6 +116,25 @@ const address = async (page, db, scrapeId, inputRange) => {
 
     const selectAddress = async (page, selector) => {
         const findAddress = (addresses, address) => {
+            const addressParts = address.split(' ');
+            const abbreviations = {
+                Rd: 'Road',
+                Ave: 'Avenue',
+                Ln: 'Lane',
+                Dr: 'Drive',
+                St: 'Street'
+            }
+
+            const addressPartsFixed = addressParts.map(addressItem => {
+                for (let key of Object.keys(abbreviations)) {
+                    if (key === addressItem) {
+                        return abbreviations[key];
+                    }
+                }
+                
+                return addressItem;
+            });
+
             
         }
 
@@ -132,6 +151,8 @@ const address = async (page, db, scrapeId, inputRange) => {
 
             return options;
         }, selector)
+
+        findAddress(options, `285 Green Ln, Stockport`)
 
         console.log('options', options);
     }
