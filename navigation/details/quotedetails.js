@@ -16,7 +16,10 @@ const personal = async (page, db, scrapeId, inputRange) => {
             no: '#ctl00_cphBody_qsProposerPersonalDetails_qPartTimeEmployment_rbAnswer2'
         },
         licenceType: '#ctl00_cphBody_qsProposerPersonalDetails_qLicenceType_cboAnswer',
-        howLongLicence: '#ctl00_cphBody_qsProposerPersonalDetails_qLicenceLength_cboAnswerYears'
+        howLongLicence: {
+            year: '#ctl00_cphBody_qsProposerPersonalDetails_qLicenceLength_cboAnswerYears',
+            month: '#ctl00_cphBody_qsProposerPersonalDetails_qLicenceLength_cboAnswerMonths'
+        }
     }
     const elementIds = {
         titleDropdown: 'ctl00_cphBody_qsProposerPersonalDetails_qTitle_cboAnswer'
@@ -67,15 +70,17 @@ const personal = async (page, db, scrapeId, inputRange) => {
         inputRange.licenceType.value
     )
 
-    await page.select(
-        selectors.howLongLicence,
-        inputRange.selectedLicenceLength.value
-    )
-    //console.log('dalyka: ', dalykai)
 
-    console.log('after eval')
-    // await page.click(selectors.username);
-    // await page.keyboard.type(process.env.GO_COMPARE_USERNAME);
+    await page.select(
+        selectors.howLongLicence.year,
+        inputRange.selectedLicenceLength.year.value
+    )
+    if (inputRange.selectedLicenceLength.year.text === 'Less than 1') {
+        await page.select(
+            selectors.howLongLicence.month,
+            inputRange.selectedLicenceLength.month.value
+        )
+    }
 } 
 
 const quoteDetails = async (page, db, scrapeId) => {

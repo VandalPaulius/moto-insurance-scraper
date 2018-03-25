@@ -48,10 +48,19 @@ const inputRange = {
                 value: '385'
             },
             selectedLicenceLength: {
-                text: 'Less than 1',
-                value: '1137'
+                year: {
+                    text: 'Less than 1',
+                    value: '1137'
+                },
+                month: {
+                    text: '11',
+                    value: '1149'
+                }
             }
         }
+    },
+    addressDetails: {
+
     }
 }
 
