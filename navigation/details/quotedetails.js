@@ -21,9 +21,6 @@ const personal = async (page, db, scrapeId, inputRange) => {
             month: '#ctl00_cphBody_qsProposerPersonalDetails_qLicenceLength_cboAnswerMonths'
         }
     }
-    const elementIds = {
-        titleDropdown: 'ctl00_cphBody_qsProposerPersonalDetails_qTitle_cboAnswer'
-    }
 
     // First column
     await page.select(
@@ -42,10 +39,10 @@ const personal = async (page, db, scrapeId, inputRange) => {
         false
     );
 
-    await page.click(selectors.ukResidentFrom.month)
+    await page.click(selectors.ukResidentFrom.month);
     await page.keyboard.type(`${inputRange.ukResidentFrom.month}`);
 
-    await page.click(selectors.ukResidentFrom.year)
+    await page.click(selectors.ukResidentFrom.year);
     await page.keyboard.type(`${inputRange.ukResidentFrom.year}`);
 
     // Second column
@@ -63,22 +60,96 @@ const personal = async (page, db, scrapeId, inputRange) => {
     await page.select(
         selectors.licenceType,
         inputRange.licenceType.value
-    )
+    );
 
     await page.select(
         selectors.licenceType,
         inputRange.licenceType.value
-    )
+    );
 
 
     await page.select(
         selectors.howLongLicence.year,
         inputRange.selectedLicenceLength.year.value
-    )
+    );
     if (inputRange.selectedLicenceLength.year.text === 'Less than 1') {
         await page.select(
             selectors.howLongLicence.month,
             inputRange.selectedLicenceLength.month.value
+        );
+    }
+}
+
+const address = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        postCode: '#ctl00_cphBody_qsAddressDetails_qPostcode_tbAnswer',
+        findAddressButton: '#ctl00_cphBody_qsAddressDetails_btnAddressLookupButton_btnAddressLookup',
+        addressDropdown: '#ctl00_cphBody_qsAddressDetails_qAddress_cboAnswer',
+        mainPhone: '#ctl00_cphBody_qsAddressDetails_qDaytimeTel_tbAnswer',
+        additionalPhone: '#ctl00_cphBody_qsAddressDetails_qEveningTel_tbAnswer',
+        keptAtMainAdress: {
+            yes: '#ctl00_cphBody_qsAddressDetails_qKeptOvernight_rbAnswer1',
+            no: '#ctl00_cphBody_qsAddressDetails_qKeptOvernight_rbAnswer2'
+        },
+        overNightPostCode: '#ctl00_cphBody_qsAddressDetails_qOvernightPostcode_tbAnswer'
+    }
+
+    await utils.helpers.typeClean(
+        page,
+        selectors.postCode,
+        inputRange.postCode
+    )
+
+    await page.click(selectors.findAddressButton);
+    await utils.timing.loaded(page);
+
+    // select address
+
+    // const quoteCount = await page.evaluate(quote => {
+    //     return Object.keys(
+    //         document.getElementsByClassName(quote)
+    //     ).length;
+    // }, classNames.quote)
+
+    
+    // await page.click(selectors.titleDropdown);
+    // const dalykai = await page.evaluate((titleDropdown) => { // does not fire
+    //     console.log('evaluate')
+    //     const children = document.getElementById(titleDropdown)
+    //         .childNodes;
+
+    //     const childrenKeys = Object.keys(children);
+
+    //     const options = childrenKeys.filter((childKey) => {
+    //         if (children[childKey].nodeName === "OPTION") {
+    //             return children[childKey]
+    //         }
+    //     })
+
+
+    await utils.helpers.typeClean(
+        page,
+        selectors.mainPhone,
+        inputRange.mainPhone
+    )
+
+    if (inputRange.additionalPhone) {
+        await utils.helpers.typeClean(
+            page,
+            selectors.additionalPhone,
+            inputRange.additionalPhone
+        )
+    }
+    
+    if (inputRange.keptAtMainAddress) {
+        await page.click(selectors.keptAtMainAdress.yes);
+    } else {
+        await page.click(selectors.keptAtMainAdress.no);
+
+        await utils.helpers.typeClean(
+            page,
+            selectors.overNightPostCode,
+            inputRange.overNightPostCode
         )
     }
 } 
@@ -87,6 +158,7 @@ const quoteDetails = async (page, db, scrapeId) => {
     const inputRange = db.getDb()[scrapeId].inputRange;
 
     await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
+    await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
 
     
 }
