@@ -4,7 +4,8 @@
   "description": "gocompare scraper",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js --inspect",
+    "start2": "inspect --debug-brk index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +26,8 @@
   "dependencies": {
     "cwd": "^0.10.0",
     "dotenv": "^5.0.1",
-    "puppeteer": "^1.2.0"
+    "inspect-process": "^0.5.0",
+    "puppeteer": "^1.2.0",
+    "uuid": "^3.2.1"
   }
 }

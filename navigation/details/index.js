@@ -1,1 +1,1 @@
-exports.removeSuperfluousQuotes = require('./quotedetails');
+exports.quoteDetails = require('./quotedetails');
