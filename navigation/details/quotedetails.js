@@ -104,28 +104,39 @@ const address = async (page, db, scrapeId, inputRange) => {
     await utils.timing.loaded(page);
 
     // select address
-
-    // const quoteCount = await page.evaluate(quote => {
-    //     return Object.keys(
-    //         document.getElementsByClassName(quote)
-    //     ).length;
-    // }, classNames.quote)
-
+    const typeClean = async (page, selector, value) => {
+        await page.click(selector);
     
-    // await page.click(selectors.titleDropdown);
-    // const dalykai = await page.evaluate((titleDropdown) => { // does not fire
-    //     console.log('evaluate')
-    //     const children = document.getElementById(titleDropdown)
-    //         .childNodes;
+        await page.evaluate((selector) => {
+            document.querySelector(selector).value = '';
+        }, selector)
+    
+        await page.keyboard.type(value);
+    }
 
-    //     const childrenKeys = Object.keys(children);
+    const selectAddress = async (page, selector) => {
+        const findAddress = (addresses, address) => {
+            
+        }
 
-    //     const options = childrenKeys.filter((childKey) => {
-    //         if (children[childKey].nodeName === "OPTION") {
-    //             return children[childKey]
-    //         }
-    //     })
+        const options = await page.evaluate((selector) => {
+            const addressList = document.querySelector(selector);
+            const optionKeys = Object.keys(addressList);
 
+            const options = optionKeys.map(key => {
+                return {
+                    value: addressList[key].value,
+                    text: addressList[key].text
+                }
+            })
+
+            return options;
+        }, selector)
+
+        console.log('options', options);
+    }
+
+    await selectAddress(page, selectors.addressDropdown);
 
     await utils.helpers.typeClean(
         page,
