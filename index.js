@@ -30,16 +30,28 @@ const inputRange = {
                 text: 'Mr',
                 value: '1'
             },
-            maritalStatus: 'Single',
+            maritalStatus: {
+                text: 'Single',
+                value: '7'
+            },
             ukResidentFrom: {
                 month: 7,
                 year: 2017
             },
-            fullTimeEmployment: 'Employed',
-        },
-        partTimeEmploymentLess16Hrs: false,
-        licenceType: 'EU Full Bike',
-        selectedLicenceLength: 'Less than 1'
+            fullTimeEmployment: {
+                text: 'Employed',
+                value: '27'
+            },
+            partTimeEmploymentLess16Hrs: false,
+            licenceType: {
+                text: 'EU Full Bike',
+                value: '385'
+            },
+            selectedLicenceLength: {
+                text: 'Less than 1',
+                value: '1137'
+            }
+        }
     }
 }
 
