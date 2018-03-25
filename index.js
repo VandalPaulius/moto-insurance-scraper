@@ -63,7 +63,8 @@ const inputRange = {
             overNightPostCode: 'SK4 2LC',
             mainPhone: '07954463999',
             additionalPhone: '07954463991',
-            keptAtMainAddress: true
+            keptAtMainAddress: true,
+            address: '285 Green Ln, Stockport'
         }
     }
 }

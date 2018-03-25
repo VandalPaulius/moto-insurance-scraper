@@ -116,7 +116,10 @@ const address = async (page, db, scrapeId, inputRange) => {
 
     const selectAddress = async (page, selector) => {
         const findAddress = (addresses, address) => {
-            const addressParts = address.split(' ');
+            const clearPattern = /[a-zA-Z0-9-\s]+/;
+            const addressCleared = clearPattern.exec(address);
+
+            const addressParts = address[0].split(' ');
             const abbreviations = {
                 Rd: 'Road',
                 Ave: 'Avenue',
@@ -124,6 +127,8 @@ const address = async (page, db, scrapeId, inputRange) => {
                 Dr: 'Drive',
                 St: 'Street'
             }
+
+            console.log('addressParts', addressParts);
 
             const addressPartsFixed = addressParts.map(addressItem => {
                 for (let key of Object.keys(abbreviations)) {
@@ -135,7 +140,24 @@ const address = async (page, db, scrapeId, inputRange) => {
                 return addressItem;
             });
 
-            
+            console.log('addressPartsFixed', addressPartsFixed)
+
+            for (let address of addresses) {
+                let match = true;
+
+                for (let part of addressPartsFixed) {
+                    const pattern = new RegExp(`/.*${part}.*/`);
+                    match = pattern.test(address);
+
+                    if(!match) {
+                        break;
+                    }
+                }
+
+                if (match) {
+                    return address;
+                }
+            }
         }
 
         const options = await page.evaluate((selector) => {
@@ -152,9 +174,10 @@ const address = async (page, db, scrapeId, inputRange) => {
             return options;
         }, selector)
 
-        findAddress(options, `285 Green Ln, Stockport`)
+        const address = findAddress(options, `285 Green Ln, Stockport`)
 
         console.log('options', options);
+        console.log('address', address);
     }
 
     await selectAddress(page, selectors.addressDropdown);
