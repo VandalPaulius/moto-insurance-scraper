@@ -116,10 +116,9 @@ const address = async (page, db, scrapeId, inputRange) => {
 
     const selectAddress = async (page, selector) => {
         const findAddress = (addresses, address) => {
-            const clearPattern = /[a-zA-Z0-9-\s]+/;
-            const addressCleared = clearPattern.exec(address);
+            const addressCleared = address.replace(/[^a-zA-Z0-9-\s]+/g, '');
 
-            const addressParts = address[0].split(' ');
+            const addressParts = addressCleared.split(' ');
             const abbreviations = {
                 Rd: 'Road',
                 Ave: 'Avenue',
@@ -127,8 +126,6 @@ const address = async (page, db, scrapeId, inputRange) => {
                 Dr: 'Drive',
                 St: 'Street'
             }
-
-            console.log('addressParts', addressParts);
 
             const addressPartsFixed = addressParts.map(addressItem => {
                 for (let key of Object.keys(abbreviations)) {
@@ -140,21 +137,18 @@ const address = async (page, db, scrapeId, inputRange) => {
                 return addressItem;
             });
 
-            console.log('addressPartsFixed', addressPartsFixed)
-
             for (let address of addresses) {
-                let match = true;
+                let match = [];
 
-                for (let part of addressPartsFixed) {
-                    const pattern = new RegExp(`/.*${part}.*/`);
-                    match = pattern.test(address);
+                for (let i = 0; i < addressPartsFixed.length; i++) {
+                    const pattern = new RegExp(addressPartsFixed[i], 'i');
 
-                    if(!match) {
-                        break;
-                    }
+                    match[i] = pattern.test(address.text);
                 }
 
-                if (match) {
+                const matchedCount = match.filter(item => item === true).length;
+
+                if (matchedCount === addressPartsFixed.length) {
                     return address;
                 }
             }
@@ -172,12 +166,11 @@ const address = async (page, db, scrapeId, inputRange) => {
             })
 
             return options;
-        }, selector)
+        }, selector);
 
-        const address = findAddress(options, `285 Green Ln, Stockport`)
+        const address = findAddress(options, inputRange.address);
 
-        console.log('options', options);
-        console.log('address', address);
+        await page.select(selector, address.value);
     }
 
     await selectAddress(page, selectors.addressDropdown);
