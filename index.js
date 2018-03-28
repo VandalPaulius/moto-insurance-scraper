@@ -65,6 +65,27 @@ const inputRange = {
             additionalPhone: '07954463991',
             keptAtMainAddress: true,
             address: '285 Green Ln, Stockport'
+        },
+        bikeDetails: {
+
+        },
+        coverDetails: {
+            coverType: {
+                value: '108',
+                text: 'Third Party Fire & Theft'
+            },
+            bikeNoClaims: {
+                value: '109',
+                text: 'None'
+            },
+            ridersCount: {
+                value: '235',
+                text: 'Proposer & 1 other'
+            },
+            bikeUse: {
+                value: '228',
+                text: 'Social including commuting to a single place of work'
+            }
         }
     }
 }

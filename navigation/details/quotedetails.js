@@ -200,7 +200,38 @@ const address = async (page, db, scrapeId, inputRange) => {
             inputRange.overNightPostCode
         )
     }
-} 
+}
+
+const coverDetails = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        coverType: '#ctl00_cphBody_qsCoverDetails_qTypeOfCover_cboAnswer',
+        bikeNoClaims: '#ctl00_cphBody_qsCoverDetails_qNCB_cboAnswer',
+        ridersCount: '#ctl00_cphBody_qsCoverDetails_qNoOfDrivers_cboAnswer',
+        bikeUse: '#ctl00_cphBody_qsCoverDetails_qUseOfVehicle_cboAnswer'
+    }
+
+    // first column
+    await page.select(
+        selectors.coverType,
+        inputRange.coverType.value
+    );
+
+    await page.select(
+        selectors.bikeNoClaims,
+        inputRange.bikeNoClaims.value
+    );
+
+    // second column
+    await page.select(
+        selectors.ridersCount,
+        inputRange.ridersCount.value
+    );
+
+    await page.select(
+        selectors.bikeUse,
+        inputRange.bikeUse.value
+    );
+}
 
 const quoteDetails = async (page, db, scrapeId) => {
     const inputRange = db.getDb()[scrapeId].inputRange;
@@ -208,7 +239,7 @@ const quoteDetails = async (page, db, scrapeId) => {
     await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
     await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
 
-    
+    await coverDetails(page, db, scrapeId, inputRange.quoteDetails.coverDetails);
 }
 
 module.exports = quoteDetails;
