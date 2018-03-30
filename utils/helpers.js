@@ -17,5 +17,22 @@ const typeClean = async (page, selector, value) => {
     await page.keyboard.type(value);
 }
 
+const getOptions = async (page, selector) => {
+    return await page.evaluate((selector) => {
+        const optionList = document.querySelector(selector);
+        const optionKeys = Object.keys(optionList);
+
+        const options = optionKeys.map(key => {
+            return {
+                value: optionList[key].value,
+                text: optionList[key].text
+            }
+        })
+
+        return options;
+    }, selector);
+}
+
 module.exports.checkbox = checkbox;
 module.exports.typeClean = typeClean;
+module.exports.getOptions = getOptions;

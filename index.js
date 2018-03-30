@@ -67,7 +67,14 @@ const inputRange = {
             address: '285 Green Ln, Stockport'
         },
         bikeDetails: {
-
+            knowRegNumber: false,
+            bikeMake: 'Honda',
+            manufactureYear: '2014',
+            engineSize: {
+                isElectric: false,
+                engineCC: '125'
+            },
+            bike: 'Honda CBF 125 2014'
         },
         coverDetails: {
             coverType: {

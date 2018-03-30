@@ -103,18 +103,7 @@ const address = async (page, db, scrapeId, inputRange) => {
     await page.click(selectors.findAddressButton);
     await utils.timing.loaded(page);
 
-    // select address
-    const typeClean = async (page, selector, value) => {
-        await page.click(selector);
-    
-        await page.evaluate((selector) => {
-            document.querySelector(selector).value = '';
-        }, selector)
-    
-        await page.keyboard.type(value);
-    }
-
-    const selectAddress = async (page, selector) => {
+    const selectAddress = async (page, selector, inputRangeAddress) => {
         const findAddress = (addresses, address) => {
             const addressCleared = address.replace(/[^a-zA-Z0-9-\s]+/g, '');
 
@@ -154,39 +143,26 @@ const address = async (page, db, scrapeId, inputRange) => {
             }
         }
 
-        const options = await page.evaluate((selector) => {
-            const addressList = document.querySelector(selector);
-            const optionKeys = Object.keys(addressList);
-
-            const options = optionKeys.map(key => {
-                return {
-                    value: addressList[key].value,
-                    text: addressList[key].text
-                }
-            })
-
-            return options;
-        }, selector);
-
-        const address = findAddress(options, inputRange.address);
+        const options = await utils.helpers.getOptions(page, selector);
+        const address = findAddress(options, inputRangeAddress);
 
         await page.select(selector, address.value);
     }
 
-    await selectAddress(page, selectors.addressDropdown);
+    await selectAddress(page, selectors.addressDropdown, inputRange.address);
 
     await utils.helpers.typeClean(
         page,
         selectors.mainPhone,
         inputRange.mainPhone
-    )
+    );
 
     if (inputRange.additionalPhone) {
         await utils.helpers.typeClean(
             page,
             selectors.additionalPhone,
             inputRange.additionalPhone
-        )
+        );
     }
     
     if (inputRange.keptAtMainAddress) {
@@ -198,8 +174,108 @@ const address = async (page, db, scrapeId, inputRange) => {
             page,
             selectors.overNightPostCode,
             inputRange.overNightPostCode
-        )
+        );
     }
+}
+
+const bikeDetails = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        knowRegNumber: {
+            yes: '#ctl00_cphBody_qsVehicleSelection_qKnowRegNo_rbAnswer1',
+            no: '#ctl00_cphBody_qsVehicleSelection_qKnowRegNo_rbAnswer2'
+        },
+        bikeMake: '#ctl00_cphBody_qsVehicleSelection_qVehicleMake_cboAnswer',
+        manufactureYear: '#ctl00_cphBody_qsVehicleSelection_qYearOfMan_tbAnswer',
+        engineSize: {
+            isElectric: '#ctl00_cphBody_qsVehicleSelection_qEngineSizeCC_chkCheckBox',
+            engineCC: '#ctl00_cphBody_qsVehicleSelection_qEngineSizeCC_tbAnswer'
+        },
+        findVehicleButton: '#ctl00_cphBody_qsVehicleSelection_btnVehicleLookupDontKnowRegButton_btnVehicleLookup',
+        vehicleDropdow: '#ctl00_cphBody_qsVehicleSelection_qConfirmVehicleDontKnowReg_cboAnswer'
+    }
+
+    const selectMake = async (page, selector, bikeMake) => {
+        const options = await utils.helpers.getOptions(page, selector)
+
+        let brand;
+        const regex = (pattern) => new RegExp(`(${pattern})(?!.)`, 'i');
+        
+        for (let option of options) {
+            if(regex(bikeMake).test(option.text)) {
+                // workaround for RegExp 'lookbehind' non existance in Javascript
+                const optionTextBackwards = option.text
+                    .split('')
+                    .reverse()
+                    .join('');
+                const bikeMakeBackwards = bikeMake
+                    .split('')
+                    .reverse()
+                    .join('');
+
+                if (regex(bikeMakeBackwards).test(optionTextBackwards)) {
+                    brand = option;
+                }
+            }
+        }
+
+        page.select(selector, brand.value);
+    }
+
+    const selectBike = async (page, selector, bikeMake) => {
+        const options = await utils.helpers.getOptions(page, selector)
+        
+
+        // let brand;
+        // const regex = (pattern) => new RegExp(`(${pattern})(?!.)`, 'i');
+        
+        // for (let option of options) {
+        //     if(regex(bikeMake).test(option.text)) {
+        //         // workaround for RegExp 'lookbehind' non existance in Javascript
+        //         const optionTextBackwards = option.text
+        //             .split('')
+        //             .reverse()
+        //             .join('');
+        //         const bikeMakeBackwards = bikeMake
+        //             .split('')
+        //             .reverse()
+        //             .join('');
+
+        //         if (regex(bikeMakeBackwards).test(optionTextBackwards)) {
+        //             brand = option;
+        //         }
+        //     }
+        // }
+
+        // page.select(selector, brand);
+    }
+
+    if (inputRange.knowRegNumber) {
+        await page.click(selectors.knowRegNumber.yes);
+    } else {
+        await page.click(selectors.knowRegNumber.no);
+    }
+
+    await selectMake(page, selectors.bikeMake, inputRange.bikeMake);
+
+    await utils.helpers.typeClean(
+        page,
+        selectors.manufactureYear,
+        inputRange.manufactureYear
+    );
+
+    if (inputRange.engineSize.isElectric) {
+        await page.click(selectors.engineSize.isElectric);
+    } else {
+        await utils.helpers.typeClean(
+            page,
+            selectors.engineSize.engineCC,
+            inputRange.engineSize.engineCC
+        );
+    }
+
+    await page.click(selectors.findVehicleButton);
+
+    // select bike
 }
 
 const coverDetails = async (page, db, scrapeId, inputRange) => {
@@ -238,7 +314,7 @@ const quoteDetails = async (page, db, scrapeId) => {
 
     await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
     await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
-
+    await bikeDetails(page, db, scrapeId, inputRange.quoteDetails.bikeDetails);
     await coverDetails(page, db, scrapeId, inputRange.quoteDetails.coverDetails);
 }
 
