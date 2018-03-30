@@ -94,6 +94,49 @@ const inputRange = {
                 text: 'Social including commuting to a single place of work'
             }
         }
+    },
+    riderDetails: {
+        ridingHistory: {
+            ridingQualifications: {
+                value: '140',
+                text: 'None'
+            },
+            bikeOrganisation: {
+                value: '402',
+                text: 'None'
+            },
+            carLicence: {
+                value: '126',
+                text: 'EU full'
+            },
+            carLicenceLength: {
+                year: {
+                    value: '1137',
+                    text: 'Less than 1'
+                },
+                month: {
+                    value: '1144',
+                    text: '6'
+                }
+            },
+            haveCar: {
+                value: '957',
+                text: 'No'
+            },
+            cbtPassed: {
+                passed: true,
+                year: '2016',
+                month: '7'
+            },
+            riddenBikeLastYear: {
+                ridden: true,
+                engineCC: '660',
+                yearsRiding: {
+                    value: '0',
+                    text: '0 (Less than a year)'
+                }
+            }
+        }
     }
 }
 
@@ -127,8 +170,19 @@ const scrape = async () => {
 
     await navigation.dashboard.newQuote(page);
 
-    await navigation.details.quoteDetails(page, utils.database, scrapeId);
-    // await navigation.details.riderDetails(page, utils.database);
+    await navigation.details.quoteDetails(
+        page,
+        utils.database,
+        scrapeId,
+        true
+    );
+    await utils.timing.loaded(page);
+    await navigation.details.riderDetails(
+        page,
+        utils.database,
+        scrapeId,
+        true
+    );
     // await navigation.details.bikeDetails(page, utils.database);
     // await navigation.details.coverDetails(page, utils.database);
 

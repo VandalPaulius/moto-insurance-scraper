@@ -218,7 +218,7 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
             }
         }
 
-        page.select(selector, brand.value);
+        await page.select(selector, brand.value);
     }
 
     const selectBike = async (page, selector, bike, manufactureYear) => {
@@ -298,13 +298,21 @@ const coverDetails = async (page, db, scrapeId, inputRange) => {
     );
 }
 
-const quoteDetails = async (page, db, scrapeId) => {
+const quoteDetails = async (page, db, scrapeId, continueToNext) => {
+    const selectors = {
+        continueToNext: '#ctl00_btnNext'
+    }
+
     const inputRange = db.getDb()[scrapeId].inputRange;
 
     await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
     await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
     await bikeDetails(page, db, scrapeId, inputRange.quoteDetails.bikeDetails);
     await coverDetails(page, db, scrapeId, inputRange.quoteDetails.coverDetails);
+
+    if (continueToNext) {
+        await page.click(selectors.continueToNext);
+    }
 }
 
 module.exports = quoteDetails;
