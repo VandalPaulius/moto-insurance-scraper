@@ -191,7 +191,7 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
             engineCC: '#ctl00_cphBody_qsVehicleSelection_qEngineSizeCC_tbAnswer'
         },
         findVehicleButton: '#ctl00_cphBody_qsVehicleSelection_btnVehicleLookupDontKnowRegButton_btnVehicleLookup',
-        vehicleDropdow: '#ctl00_cphBody_qsVehicleSelection_qConfirmVehicleDontKnowReg_cboAnswer'
+        vehicleDropdown: '#ctl00_cphBody_qsVehicleSelection_qConfirmVehicleDontKnowReg_cboAnswer'
     }
 
     const selectMake = async (page, selector, bikeMake) => {
@@ -221,32 +221,20 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
         page.select(selector, brand.value);
     }
 
-    const selectBike = async (page, selector, bikeMake) => {
+    const selectBike = async (page, selector, bike, manufactureYear) => {
         const options = await utils.helpers.getOptions(page, selector)
-        
 
-        // let brand;
-        // const regex = (pattern) => new RegExp(`(${pattern})(?!.)`, 'i');
-        
-        // for (let option of options) {
-        //     if(regex(bikeMake).test(option.text)) {
-        //         // workaround for RegExp 'lookbehind' non existance in Javascript
-        //         const optionTextBackwards = option.text
-        //             .split('')
-        //             .reverse()
-        //             .join('');
-        //         const bikeMakeBackwards = bikeMake
-        //             .split('')
-        //             .reverse()
-        //             .join('');
+        let match;
+        const pattern = new RegExp(bike, 'i');
 
-        //         if (regex(bikeMakeBackwards).test(optionTextBackwards)) {
-        //             brand = option;
-        //         }
-        //     }
-        // }
+        for (let option of options) {
+            if (pattern.test(option.text)) {
+                match = option;
+                break;
+            }
+        }
 
-        // page.select(selector, brand);
+        await page.select(selector, match.value);
     }
 
     if (inputRange.knowRegNumber) {
@@ -274,8 +262,9 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
     }
 
     await page.click(selectors.findVehicleButton);
+    await utils.timing.loaded(page);
 
-    // select bike
+    await selectBike(page, selectors.vehicleDropdown, inputRange.bike);
 }
 
 const coverDetails = async (page, db, scrapeId, inputRange) => {

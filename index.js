@@ -74,7 +74,7 @@ const inputRange = {
                 isElectric: false,
                 engineCC: '125'
             },
-            bike: 'Honda CBF 125 2014'
+            bike: 'HONDA CBF 125, 2008 onwards, 124cc, Manual, Petrol, Dual-Purpose' // as in the list
         },
         coverDetails: {
             coverType: {
