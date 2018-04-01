@@ -102,6 +102,58 @@ const ridingHistory = async (page, db, scrapeId, inputRange) => {
     }
 }
 
+const generalDetails = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        medicalConditionsDropdown: '#ctl00_cphBody_qsGeneralDetails_qAnyMedConditions_cboAnswer',
+        totalBikesOwned: '#ctl00_cphBody_qsGeneralDetails_qNumberOfCars_tbAnswer',
+        otherVehiclesDropdown: '#ctl00_cphBody_qsGeneralDetails_qUseOfVehicles_cboAnswer',
+        nonMotorCriminalConvictions: {
+            yes: '#ctl00_cphBody_qsGeneralDetails_qNonMotoringConvictions_rbAnswer1',
+            no: '#ctl00_cphBody_qsGeneralDetails_qHomeOwner_rbAnswer2'
+        },
+        homeOwner: {
+            yes: '#ctl00_cphBody_qsGeneralDetails_qHomeOwner_rbAnswer1',
+            no: '#ctl00_cphBody_qsGeneralDetails_qHomeOwner_rbAnswer2'
+        },
+        childrenUnder16: {
+            yes: '#ctl00_cphBody_qsGeneralDetails_qAnyChildrenUnder16_rbAnswer1',
+            no: '#ctl00_cphBody_qsGeneralDetails_qAnyChildrenUnder16_rbAnswer2'
+        }
+    };
+
+    // first column
+    await page.select(
+        selectors.medicalConditionsDropdown,
+        inputRange.medicalConditions.value
+    );
+    
+    await utils.helpers.typeClean(
+        page,
+        selectors.totalBikesOwned,
+        inputRange.totalBikesOwned
+    );
+
+    await page.select(
+        selectors.otherVehiclesDropdown,
+        inputRange.otherVehicles.value
+    );
+
+    // second column
+    await page.click(selectors.nonMotorCriminalConvictions.no);
+
+    if (inputRange.homeOwner) {
+        await page.click(selectors.homeOwner.yes);
+    } else {
+        await page.click(selectors.homeOwner.no);
+    }
+    
+    if (inputRange.childrenUnder16) {
+        await page.click(selectors.childrenUnder16.yes);
+    } else {
+        await page.click(selectors.childrenUnder16.no);
+    }
+}
+
 const riderDetails = async (page, db, scrapeId, continueToNext) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
@@ -114,6 +166,13 @@ const riderDetails = async (page, db, scrapeId, continueToNext) => {
         db,
         scrapeId,
         inputRange.riderDetails.ridingHistory
+    );
+
+    await generalDetails(
+        page,
+        db,
+        scrapeId,
+        inputRange.riderDetails.generalDetails
     );
 
     // if (continueToNext) {

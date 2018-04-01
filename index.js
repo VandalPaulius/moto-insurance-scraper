@@ -136,6 +136,20 @@ const inputRange = {
                     text: '0 (Less than a year)'
                 }
             }
+        },
+        generalDetails: {
+            medicalConditions: {
+                text: 'No',
+                value: '143'
+            },
+            totalBikesOwned: '1',
+            otherVehicles: {
+                value: '150',
+                text: 'No access to any other vehicles'
+            },
+            nonMotorCriminalConvictions: false,
+            homeOwner: false,
+            childrenUnder16: false
         }
     }
 }
