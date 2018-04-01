@@ -33,6 +33,15 @@ const getOptions = async (page, selector) => {
     }, selector);
 }
 
+const selectYesNo = async (page, selectors, yes) => {
+    if (yes) {
+        await page.click(selectors.yes);
+    } else {
+        await page.click(selectors.no);
+    }
+}
+
 module.exports.checkbox = checkbox;
 module.exports.typeClean = typeClean;
 module.exports.getOptions = getOptions;
+module.exports.selectYesNo = selectYesNo;

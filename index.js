@@ -86,8 +86,8 @@ const inputRange = {
                 text: 'None'
             },
             ridersCount: {
-                value: '235',
-                text: 'Proposer & 1 other'
+                value: '234',
+                text: 'Proposer only'
             },
             bikeUse: {
                 value: '228',
@@ -165,6 +165,37 @@ const inputRange = {
             claimsAccidents5Years: false,
             motorConvictions: false
         }
+    },
+    bikeDetails: {
+        bikeInfo: {
+            purchaseDate: {
+                alreadyBought: true,
+                year: '2017',
+                month: '7'
+            },
+            sideCar: false,
+            includePillion: true,
+            usedToTow: false,
+            previouslyInsured: false,
+            modified: false,
+            bikeValue: '1400',
+            bikeOvernightParking: {
+                text: 'On the road at home',
+                value: '339'
+            },
+            bikeImported: {
+                text: 'No',
+                value: '849'
+            },
+            registeredKeeper: {
+                text: 'Proposer',
+                value: '319'
+            },
+            legalOwner: {
+                text: 'Proposer',
+                value: '319'
+            }
+        }
     }
 }
 
@@ -211,7 +242,13 @@ const scrape = async () => {
         scrapeId,
         true
     );
-    // await navigation.details.bikeDetails(page, utils.database);
+    await utils.timing.loaded(page);
+    await navigation.details.bikeDetails(
+        page,
+        utils.database,
+        scrapeId,
+        true
+    );
     // await navigation.details.coverDetails(page, utils.database);
 
     // await navigation.main.logout(page);
