@@ -222,7 +222,7 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
     }
 
     const selectBike = async (page, selector, bike, manufactureYear) => {
-        const options = await utils.helpers.getOptions(page, selector)
+        const options = await utils.helpers.getOptions(page, selector);
 
         let match;
         const pattern = new RegExp(bike, 'i');

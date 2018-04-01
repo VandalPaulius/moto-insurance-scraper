@@ -197,7 +197,10 @@ const inputRange = {
             }
         },
         bikeSecurity: {
-            
+            alarmImmobilizer: '',
+            mechanicalSecurity: '',
+            secureMarkings: '',
+            tracker: ''
         }
     }
 }

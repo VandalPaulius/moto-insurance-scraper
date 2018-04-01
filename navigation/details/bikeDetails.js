@@ -140,10 +140,56 @@ const bikeInfo = async (page, db, scrapeId, inputRange) => {
 
 const bikeSecurity = async (page, db, scrapeId, inputRange) => {
     const selectors = {
-        
+        alarmImmobilizer: '#ctl00_cphBody_qsVehicleSecurity_qImmobAlarm_tbAnswer',
+        alarmImmobilizerList: 'body > ul:nth-child(5)',
+        mechanicalSecurity: '#ctl00_cphBody_qsVehicleSecurity_qPhysicalSecurity_tbAnswer',
+        mechanicalSecurityList: 'body > ul:nth-child(6)',
+        secureMarkingsDropdown: '#ctl00_cphBody_qsVehicleSecurity_qSecureMarkings_cboAnswer',
+        trackerDropdown: '#ctl00_cphBody_qsVehicleSecurity_qTracker_cboAnswer'
     };
 
-    
+    const selectAlarmsImmobilizers = async (page, selector, item) => {
+        const getItems = async (page, selector) => {
+            return await page.evaluate((selector) => {
+                const optionList = document.querySelector(selector).children;
+                return optionList;
+                // console.log('optionKeys: ', optionKeys);
+        
+                // const options = optionKeys.map(key => {
+                //     return {
+                //         value: optionList[key].value,
+                //         text: optionList[key].text
+                //     }
+                // })
+        
+                //return options;
+            }, selector);
+        }
+
+        const options = await getItems(page, selector);
+        //const options = await utils.helpers.getOptions(page, selector);
+        console.log('options: ', options)
+
+        // let match;
+        // const pattern = new RegExp(item, 'i');
+
+        // for (let option of options) {
+        //     if (pattern.test(option.text)) {
+        //         match = option;
+        //         break;
+        //     }
+        // }
+
+        // console.log('match: ', match)
+    }
+
+    await page.click(selectors.alarmImmobilizer);
+    await selectAlarmsImmobilizers(
+        page,
+        selectors.alarmImmobilizerList,
+        inputRange.alarmImmobilizer
+    );
+
 }
 
 const bikeDetails = async (page, db, scrapeId, continueToNext) => {
