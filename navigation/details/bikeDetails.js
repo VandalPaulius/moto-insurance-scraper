@@ -138,6 +138,14 @@ const bikeInfo = async (page, db, scrapeId, inputRange) => {
     );
 }
 
+const bikeSecurity = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        
+    };
+
+    
+}
+
 const bikeDetails = async (page, db, scrapeId, continueToNext) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
@@ -146,6 +154,13 @@ const bikeDetails = async (page, db, scrapeId, continueToNext) => {
     const inputRange = db.getDb()[scrapeId].inputRange;
 
     await bikeInfo(
+        page,
+        db,
+        scrapeId,
+        inputRange.bikeDetails.bikeInfo
+    );
+
+    await bikeSecurity(
         page,
         db,
         scrapeId,

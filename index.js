@@ -195,6 +195,9 @@ const inputRange = {
                 text: 'Proposer',
                 value: '319'
             }
+        },
+        bikeSecurity: {
+            
         }
     }
 }
