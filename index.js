@@ -197,8 +197,8 @@ const inputRange = {
             }
         },
         bikeSecurity: {
-            alarmImmobilizer: '',
-            mechanicalSecurity: '',
+            alarmImmobilizer: 'Abletronics A2000 plus',
+            mechanicalSecurity: 'Almax Immobiliser Series IV Padlock And Chain',
             secureMarkings: '',
             tracker: ''
         }

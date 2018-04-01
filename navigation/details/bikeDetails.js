@@ -140,56 +140,59 @@ const bikeInfo = async (page, db, scrapeId, inputRange) => {
 
 const bikeSecurity = async (page, db, scrapeId, inputRange) => {
     const selectors = {
-        alarmImmobilizer: '#ctl00_cphBody_qsVehicleSecurity_qImmobAlarm_tbAnswer',
-        alarmImmobilizerList: 'body > ul:nth-child(5)',
-        mechanicalSecurity: '#ctl00_cphBody_qsVehicleSecurity_qPhysicalSecurity_tbAnswer',
-        mechanicalSecurityList: 'body > ul:nth-child(6)',
+        alarmImmobilizer: {
+            inputField: '#ctl00_cphBody_qsVehicleSecurity_qImmobAlarm_tbAnswer',
+            list: 'body > ul:nth-child(5)',
+            listItem: 'body > ul:nth-child(5) > li.ui-menu-item:nth-child(${number})',
+            listItemAnchor: (number) => `body > ul:nth-child(5) > li.ui-menu-item:nth-child(${number + 1}) > a`
+        },
+        mechanicalSecurity: {
+            inputField: '#ctl00_cphBody_qsVehicleSecurity_qPhysicalSecurity_tbAnswer',
+            list: 'body > ul:nth-child(6)',
+            listItem: 'body > ul:nth-child(6) > li.ui-menu-item:nth-child(${number})',
+            listItemAnchor: (number) => `body > ul:nth-child(6) > li.ui-menu-item:nth-child(${number + 1}) > a`
+        },
         secureMarkingsDropdown: '#ctl00_cphBody_qsVehicleSecurity_qSecureMarkings_cboAnswer',
         trackerDropdown: '#ctl00_cphBody_qsVehicleSecurity_qTracker_cboAnswer'
     };
 
-    const selectAlarmsImmobilizers = async (page, selector, item) => {
-        const getItems = async (page, selector) => {
-            return await page.evaluate((selector) => {
-                const optionList = document.querySelector(selector).children;
-                return optionList;
-                // console.log('optionKeys: ', optionKeys);
-        
-                // const options = optionKeys.map(key => {
-                //     return {
-                //         value: optionList[key].value,
-                //         text: optionList[key].text
-                //     }
-                // })
-        
-                //return options;
-            }, selector);
-        }
+    const selectWeirdListItem = async (page, selector, immobilizer) => {
+        const getIndex = async (page, selector, item) => {
+            return await page.evaluate((selector, item) => {
+                const optionList = document
+                    .querySelector(selector.list)
+                    .children;
 
-        const options = await getItems(page, selector);
-        //const options = await utils.helpers.getOptions(page, selector);
-        console.log('options: ', options)
+                for (let i = 0; i < optionList.length; i++) {
+                    const dataContainer = optionList[i].querySelector('a');
 
-        // let match;
-        // const pattern = new RegExp(item, 'i');
+                    const pattern = new RegExp(item, 'i');
 
-        // for (let option of options) {
-        //     if (pattern.test(option.text)) {
-        //         match = option;
-        //         break;
-        //     }
-        // }
+                    if (pattern.test(dataContainer.innerText)) {
+                        return i;
+                    }
+                }
+            }, selector, item);
+        };
 
-        // console.log('match: ', match)
+        const itemIndex = await getIndex(page, selector, immobilizer);
+
+        await page.click(selector.listItemAnchor(itemIndex));
     }
 
-    await page.click(selectors.alarmImmobilizer);
-    await selectAlarmsImmobilizers(
+    await page.click(selectors.mechanicalSecurity.inputField);
+    await selectWeirdListItem(
         page,
-        selectors.alarmImmobilizerList,
-        inputRange.alarmImmobilizer
+        selectors.mechanicalSecurity,
+        inputRange.mechanicalSecurity
     );
 
+    await page.click(selectors.alarmImmobilizer.inputField);
+    await selectWeirdListItem(
+        page,
+        selectors.alarmImmobilizer,
+        inputRange.alarmImmobilizer
+    );
 }
 
 const bikeDetails = async (page, db, scrapeId, continueToNext) => {
@@ -210,7 +213,7 @@ const bikeDetails = async (page, db, scrapeId, continueToNext) => {
         page,
         db,
         scrapeId,
-        inputRange.bikeDetails.bikeInfo
+        inputRange.bikeDetails.bikeSecurity
     );
 
     // if (continueToNext) {
