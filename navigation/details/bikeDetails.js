@@ -111,7 +111,31 @@ const bikeInfo = async (page, db, scrapeId, inputRange) => {
     ); // no implementation of modification dialog yet
 
     // second column
-    
+    await utils.helpers.typeClean(
+        page,
+        selectors.bikeValue,
+        inputRange.bikeValue
+    );
+
+    await page.select(
+        selectors.bikeOvernightParking,
+        inputRange.bikeOvernightParking.value
+    );
+
+    await page.select(
+        selectors.bikeImported,
+        inputRange.bikeImported.value
+    );
+
+    await page.select(
+        selectors.registeredKeeper,
+        inputRange.registeredKeeper.value
+    );
+
+    await page.select(
+        selectors.legalOwner,
+        inputRange.legalOwner.value
+    );
 }
 
 const bikeDetails = async (page, db, scrapeId, continueToNext) => {
