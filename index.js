@@ -150,6 +150,20 @@ const inputRange = {
             nonMotorCriminalConvictions: false,
             homeOwner: false,
             childrenUnder16: false
+        },
+        occupationDetails: {
+            occupation: {
+                text: 'Aircraft Engineer',
+                value: '40'
+            },
+            business: {
+                text: 'Aerial Photography',
+                value: '10'
+            }
+        },
+        claimsAndConvictions: {
+            claimsAccidents5Years: false,
+            motorConvictions: false
         }
     }
 }

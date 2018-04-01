@@ -1,6 +1,23 @@
 const cwd = require('cwd');
 const utils = require(cwd('utils'));
 
+const claimsAndConvictions = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        claimsAccidents5Years: {
+            yes: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyClaims_rbAnswer1',
+            no: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyClaims_rbAnswer2'
+        },
+        motorConvictions: {
+            yes: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyConvictions_rbAnswer1',
+            no: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyConvictions_rbAnswer2'
+        }
+    };
+
+    await page.click(selectors.claimsAccidents5Years.no);
+
+    await page.click(selectors.motorConvictions.no);
+}
+
 const ridingHistory = async (page, db, scrapeId, inputRange) => {
     const selectors = {
         ridingQualificationsDropdown: '#ctl00_cphBody_qsRidingHistory_qRidingQualification_cboAnswer',
@@ -154,12 +171,46 @@ const generalDetails = async (page, db, scrapeId, inputRange) => {
     }
 }
 
+const occupationDetails = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        occupation: {
+            showAll: '#ctl00_cphBody_qsOccupationDetails_qFullTimeOccupation_lnkShowAll',
+            list: '#ctl00_cphBody_qsOccupationDetails_qFullTimeOccupation_lstShowAllListbox',
+            selectValue: (optionNumber) => `#ctl00_cphBody_qsOccupationDetails_qFullTimeOccupation_lstShowAllListbox > option:nth-child(${parseInt(optionNumber) + 1})`
+        },
+        business: {
+            showAll: '#ctl00_cphBody_qsOccupationDetails_qFullTimeTypeOfBusiness_lnkShowAll',
+            list: '#ctl00_cphBody_qsOccupationDetails_qFullTimeTypeOfBusiness_lstShowAllListbox',
+            selectValue: (optionNumber) => `#ctl00_cphBody_qsOccupationDetails_qFullTimeTypeOfBusiness_lstShowAllListbox > option:nth-child(${parseInt(optionNumber) + 1})`
+        }
+    };
+
+    await page.click(selectors.occupation.showAll);
+    await utils.timing.loaded(page);
+    await page.click(
+        selectors.occupation.selectValue(inputRange.occupation.value)
+    );
+
+    await page.click(selectors.business.showAll);
+    await utils.timing.loaded(page);
+    await page.click(
+        selectors.business.selectValue(inputRange.business.value)
+    );
+}
+
 const riderDetails = async (page, db, scrapeId, continueToNext) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
 
     const inputRange = db.getDb()[scrapeId].inputRange;
+
+    await claimsAndConvictions(
+        page,
+        db,
+        scrapeId,
+        inputRange.riderDetails.claimsAndConvictions
+    );
 
     await ridingHistory(
         page,
@@ -175,9 +226,16 @@ const riderDetails = async (page, db, scrapeId, continueToNext) => {
         inputRange.riderDetails.generalDetails
     );
 
-    // if (continueToNext) {
-    //     await page.click(selectors.continueToNext);
-    // }
+    await occupationDetails(
+        page,
+        db,
+        scrapeId,
+        inputRange.riderDetails.occupationDetails
+    );
+
+    if (continueToNext) {
+        await page.click(selectors.continueToNext);
+    }
 }
 
 module.exports = riderDetails;
