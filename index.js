@@ -199,8 +199,14 @@ const inputRange = {
         bikeSecurity: {
             alarmImmobilizer: 'Abletronics A2000 plus',
             mechanicalSecurity: 'Almax Immobiliser Series IV Padlock And Chain',
-            secureMarkings: '',
-            tracker: ''
+            secureMarkings: {
+                text: 'Datatag',
+                value: '519'
+            },
+            tracker: {
+                text: '(Not in list)',
+                value: '1492'
+            }
         }
     }
 }
@@ -255,6 +261,7 @@ const scrape = async () => {
         scrapeId,
         true
     );
+    await utils.timing.loaded(page);
     // await navigation.details.coverDetails(page, utils.database);
 
     // await navigation.main.logout(page);

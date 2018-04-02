@@ -193,6 +193,16 @@ const bikeSecurity = async (page, db, scrapeId, inputRange) => {
         selectors.alarmImmobilizer,
         inputRange.alarmImmobilizer
     );
+
+    await page.select(
+        selectors.secureMarkingsDropdown,
+        inputRange.secureMarkings.value
+    );
+
+    await page.select(
+        selectors.trackerDropdown,
+        inputRange.tracker.value
+    );
 }
 
 const bikeDetails = async (page, db, scrapeId, continueToNext) => {
@@ -216,9 +226,9 @@ const bikeDetails = async (page, db, scrapeId, continueToNext) => {
         inputRange.bikeDetails.bikeSecurity
     );
 
-    // if (continueToNext) {
-    //     await page.click(selectors.continueToNext);
-    // }
+    if (continueToNext) {
+        await page.click(selectors.continueToNext);
+    }
 }
 
 module.exports = bikeDetails;
