@@ -208,6 +208,22 @@ const inputRange = {
                 value: '1492'
             }
         }
+    },
+    coverDetails: {
+        coverInfo: {
+            plusDays: '15',
+            renewalPrice: '0',
+            voluntaryExcess: {
+                text: '£250',
+                value: '121'
+            },
+            annualMileage: {
+                value: '204',
+                text: 'Up to 6000'
+            },
+            payFull: false,
+            declinedOrSpecialTerms: false
+        }
     }
 }
 
@@ -229,6 +245,7 @@ const scrape = async () => {
     });
     const page = await browser.newPage();
 
+    page.on('console', msg => console.log('PAGE LOG:', msg.text())); // for debug
     await page.setViewport({width: 1200, height: 500})
     await page.goto(process.env.URL_TO_SCRAPE);
 
@@ -262,7 +279,18 @@ const scrape = async () => {
         true
     );
     await utils.timing.loaded(page);
-    // await navigation.details.coverDetails(page, utils.database);
+    await navigation.details.coverDetails(
+        page,
+        utils.database,
+        scrapeId,
+        true
+    );
+    await utils.timing.loaded(page);
+    await navigation.quotes.getQuotes(
+        page,
+        utils.database,
+        scrapeId
+    );
 
     // await navigation.main.logout(page);
     // await browser.close();

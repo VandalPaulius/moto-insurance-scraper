@@ -78,7 +78,7 @@ const personal = async (page, db, scrapeId, inputRange) => {
             inputRange.selectedLicenceLength.month.value
         );
     }
-}
+};
 
 const address = async (page, db, scrapeId, inputRange) => {
     const selectors = {
@@ -176,7 +176,7 @@ const address = async (page, db, scrapeId, inputRange) => {
             inputRange.overNightPostCode
         );
     }
-}
+};
 
 const bikeDetails = async (page, db, scrapeId, inputRange) => {
     const selectors = {
@@ -265,7 +265,7 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
     await utils.timing.loaded(page);
 
     await selectBike(page, selectors.vehicleDropdown, inputRange.bike);
-}
+};
 
 const coverDetails = async (page, db, scrapeId, inputRange) => {
     const selectors = {
@@ -296,7 +296,7 @@ const coverDetails = async (page, db, scrapeId, inputRange) => {
         selectors.bikeUse,
         inputRange.bikeUse.value
     );
-}
+};
 
 const quoteDetails = async (page, db, scrapeId, continueToNext) => {
     const selectors = {
@@ -313,6 +313,6 @@ const quoteDetails = async (page, db, scrapeId, continueToNext) => {
     if (continueToNext) {
         await page.click(selectors.continueToNext);
     }
-}
+};
 
 module.exports = quoteDetails;
