@@ -65,23 +65,55 @@ const getQuotes = async (page, db, scrapeId) => {
         const optionsRaw = getOptionsRaw();
 
         const options = optionsRaw.map((optionRaw) => {
-            const itemSelector = {
-                special: (number) => `tr > td > table > tbody > tr > td:nth-child(${number})`
+            // const itemSelector = {
+            //     special: (number) => `tr > td > table > tbody > tr > td:nth-child(${number})`
 
-                //<td><table class="resultsgridrow"><tbody><tr class="resultsgriddatarow">
+            //     //<td><table class="resultsgridrow"><tbody><tr class="resultsgriddatarow">
 
-                //     #divresultsgridplacement > div > span:nth-child(1) > table > tbody > tr:nth-child(',
-                // ') > td > table > tbody > tr'
+            //     //     #divresultsgridplacement > div > span:nth-child(1) > table > tbody > tr:nth-child(',
+            //     // ') > td > table > tbody > tr'
+            // }
+
+
+            // console.error('optionRaw.option', optionRaw.option)
+            // try {
+            //     console.log('SPECIAL optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
+            // } catch(err) {
+
+            // }
+            
+            // if (optionRaw.flavor === 'SPECIAL') {
+            //     console.log('SPECIAL optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
+            //     // MODIFY SELECTOR BY FLAVOR
+            // }
+            // if (optionRaw.flavor === 'STANDARD') {
+            //     console.log('STANDARD optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
+            //     // MODIFY SELECTOR BY FLAVOR
+            // }
+            // if (optionRaw.flavor === 'AL') {
+            //     console.log('optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
+            //     // MODIFY SELECTOR BY FLAVOR
+            // }
+
+
+
+
+            // const itemSelector = (number) => `tr > td > table > tbody > tr > td:nth-child(${number})`;
+            const itemSelector = (number) => `tr > td > table > tbody > tr > td:nth-child(${number}) > div`;
+            //<td><table class="resultsgridrow"><tbody><tr class="resultsgriddatarow">
+
+            //     #divresultsgridplacement > div > span:nth-child(1) > table > tbody > tr:nth-child(',
+            // ') > td > table > tbody > tr'
+
+
+            const getElement = (selectors = '') => optionRaw.option.querySelector(`${itemSelector(2)} ${selectors}`)
+
+            const data = {
+                insurerName: getElement('> img ').title,
+                insurerLogo: getElement('> img ').src
             }
 
-
-
-            if (optionRaw.flavor === 'SPECIAL') {
-                console.error('optionRaw.option', optionRaw.option)
-                console.error('optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
-                // MODIFY SELECTOR BY FLAVOR
-            }
-
+            return data;
         });
         
         return options;
