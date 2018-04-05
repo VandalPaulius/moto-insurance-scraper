@@ -35,8 +35,9 @@ const inputRange = {
                 value: '7'
             },
             ukResidentFrom: {
-                month: 7,
-                year: 2017
+                birth: false,
+                month: '7',
+                year: '2017'
             },
             fullTimeEmployment: {
                 text: 'Employed',
@@ -227,7 +228,7 @@ const inputRange = {
     }
 }
 
-const scrape = async (scrapeId) => {
+const scrape = async (scrapeId, debug) => {
     console.log('scrape it');
     utils.database.saveToDb({
         type: 'inputRange',
@@ -243,7 +244,10 @@ const scrape = async (scrapeId) => {
     });
     const page = await browser.newPage();
 
-    page.on('console', msg => console.log('PAGE LOG:', msg.text())); // for debug
+    if (debug) {
+        page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    }
+    
     await page.setViewport({width: 1200, height: 500})
     await page.goto(process.env.URL_TO_SCRAPE);
 

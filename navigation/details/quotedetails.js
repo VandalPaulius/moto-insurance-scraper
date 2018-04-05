@@ -33,17 +33,30 @@ const personal = async (page, db, scrapeId, inputRange) => {
         inputRange.maritalStatus.value
     );
 
-    await utils.helpers.checkbox(
-        page,
-        selectors.ukResidentFrom.checkbox,
-        false
-    );
+    const isSelected = await page.evaluate((selector) => {
+        const element = document.querySelector(selector);
+        return element.checked;
+    }, selectors.ukResidentFrom.checkbox);
 
-    await page.click(selectors.ukResidentFrom.month);
-    await page.keyboard.type(`${inputRange.ukResidentFrom.month}`);
+    if (inputRange.ukResidentFrom.birth && isSelected) {
+        await page.click(selectors.ukResidentFrom.checkbox);
+    } else if (!inputRange.ukResidentFrom.birth && !isSelected) {
+        await page.click(selectors.ukResidentFrom.checkbox);
+    }
 
-    await page.click(selectors.ukResidentFrom.year);
-    await page.keyboard.type(`${inputRange.ukResidentFrom.year}`);
+    if (inputRange.ukResidentFrom.birth) {
+        await utils.helpers.typeClean(
+            page,
+            selectors.ukResidentFrom.year,
+            inputRange.ukResidentFrom.year
+        );
+
+        await utils.helpers.typeClean(
+            page,
+            selectors.ukResidentFrom.month,
+            inputRange.ukResidentFrom.month
+        );
+    }
 
     // Second column
     await page.select(
