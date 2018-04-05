@@ -76,7 +76,7 @@ const getQuotes = async (page, db, scrapeId) => {
             }
 
             let hasPrice = true;
-            
+
             try {
                 getElement(3, ' > div:nth-child(1)').innerText
             } catch (error) {
@@ -105,7 +105,7 @@ const getQuotes = async (page, db, scrapeId) => {
         resultTableItem: selectors.resultTableItem
     });
 
-    console.log('quotes: ', quotes, 'length: ', quotes.length);
+    return quotes;
 };
 
 module.exports = getQuotes;
