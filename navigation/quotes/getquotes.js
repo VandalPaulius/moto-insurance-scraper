@@ -65,52 +65,35 @@ const getQuotes = async (page, db, scrapeId) => {
         const optionsRaw = getOptionsRaw();
 
         const options = optionsRaw.map((optionRaw) => {
-            // const itemSelector = {
-            //     special: (number) => `tr > td > table > tbody > tr > td:nth-child(${number})`
-
-            //     //<td><table class="resultsgridrow"><tbody><tr class="resultsgriddatarow">
-
-            //     //     #divresultsgridplacement > div > span:nth-child(1) > table > tbody > tr:nth-child(',
-            //     // ') > td > table > tbody > tr'
-            // }
-
-
-            // console.error('optionRaw.option', optionRaw.option)
-            // try {
-            //     console.log('SPECIAL optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
-            // } catch(err) {
-
-            // }
-            
-            // if (optionRaw.flavor === 'SPECIAL') {
-            //     console.log('SPECIAL optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
-            //     // MODIFY SELECTOR BY FLAVOR
-            // }
-            // if (optionRaw.flavor === 'STANDARD') {
-            //     console.log('STANDARD optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
-            //     // MODIFY SELECTOR BY FLAVOR
-            // }
-            // if (optionRaw.flavor === 'AL') {
-            //     console.log('optionRaw.option.querySelector(itemSelector.special)', optionRaw.option.querySelector(itemSelector.special(2)))
-            //     // MODIFY SELECTOR BY FLAVOR
-            // }
-
-
-
-
-            // const itemSelector = (number) => `tr > td > table > tbody > tr > td:nth-child(${number})`;
-            const itemSelector = (number) => `tr > td > table > tbody > tr > td:nth-child(${number}) > div`;
-            //<td><table class="resultsgridrow"><tbody><tr class="resultsgriddatarow">
-
-            //     #divresultsgridplacement > div > span:nth-child(1) > table > tbody > tr:nth-child(',
-            // ') > td > table > tbody > tr'
-
-
-            const getElement = (selectors = '') => optionRaw.option.querySelector(`${itemSelector(2)} ${selectors}`)
+            const itemSelector = (number) => `tr > td > table > tbody > tr > td:nth-child(${number})`;
+            const getElement = (number, selectors = '') => optionRaw.option.querySelector(`${itemSelector(number)}${selectors}`)
 
             const data = {
-                insurerName: getElement('> img ').title,
-                insurerLogo: getElement('> img ').src
+                insurer: {
+                    name: getElement(2, ' > div > img ').title,
+                    logo: getElement(2, ' > div > img ').src
+                }
+            }
+
+            let hasPrice = true;
+            
+            try {
+                getElement(3, ' > div:nth-child(1)').innerText
+            } catch (error) {
+                hasPrice = false;
+            }
+
+            if (hasPrice) {
+                data.price = {
+                    full: getElement(3, ' > div:nth-child(1)').innerText,
+                    monthly: {
+                        deposit: getElement(3, ' > div:nth-child(2) > div:nth-child(3)').innerText,
+                        month: getElement(3, ' > div:nth-child(2) > div:nth-child(5)').innerText,
+                        total: getElement(3, ' > div:nth-child(2) > div:nth-child(7)').innerText
+                    },
+                    excess: getElement(4, ' > div').innerText
+                }
+                data.coverType = getElement(9, '').innerText;
             }
 
             return data;

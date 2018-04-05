@@ -251,6 +251,7 @@ const scrape = async () => {
 
     await navigation.main.homeToLogin(page);
 
+    await utils.timing.loaded(page);
     await navigation.main.login(page);
     await utils.timing.show(page);
 
