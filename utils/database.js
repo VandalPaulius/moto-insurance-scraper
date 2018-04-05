@@ -6,6 +6,15 @@ const getDb = () => {
 
 const dbReducer = (db, { type, data }) => {
     switch (type) {
+        case 'quotes': {
+            return {
+                ...db,
+                [data.scrapeId]: {
+                    ...db[data.scrapeId],
+                    quotes: data.quotes
+                }
+            }
+        }
         case 'input': {
             return {
                 ...db,

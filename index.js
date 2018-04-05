@@ -227,9 +227,7 @@ const inputRange = {
     }
 }
 
-const scrape = async () => {
-    const scrapeId = uuidv1();
-
+const scrape = async (scrapeId) => {
     console.log('scrape it');
     utils.database.saveToDb({
         type: 'inputRange',
@@ -287,16 +285,30 @@ const scrape = async () => {
         true
     );
     await utils.timing.loaded(page);
-    await navigation.quotes.getQuotes(
+    const quotes = await navigation.quotes.getQuotes(
         page,
         utils.database,
         scrapeId
     );
 
-    // await navigation.main.logout(page);
-    // await browser.close();
+    await navigation.main.logout(page, true);
+    await browser.close();
+
+    return {
+        quotes,
+        scrapeId
+    };
 }
 
-scrape().then((values) => {
-    console.log('values: ', values);
+const scrapeId = uuidv1();
+
+scrape(scrapeId).then(({ quotes, scrapeId }) => {
+    utils.database.saveToDb({
+        type: 'quotes',
+        data: {
+            scrapeId,
+            quotes
+        }
+    });
+    console.log('DATABASE: ', utils.database.getDb());
 });
