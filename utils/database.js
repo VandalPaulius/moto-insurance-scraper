@@ -1,5 +1,11 @@
 let database = {};
 
+const initDb = () => {
+    database = {
+        scrapeOptions: {}
+    }
+}
+
 const getDb = () => {
     return database;
 }
@@ -7,16 +13,49 @@ const getDb = () => {
 const dbReducer = (db, { type, data }) => {
     switch (type) {
         case 'scrapeOptionsInputRange': {
+            const database =  {
+                ...db,
+                scrapeOptions: {
+                    ...db.scrapeOptions,
+                    [data.scrapeId]: {
+                        ...db.scrapeOptions[data.scrapeId]
+                    }
+                }
+            };
+
+            if (!db.scrapeOptions[data.scrapeId]) {
+                database.scrapeOptions = {
+                    ...db.scrapeOptions,
+                    [data.scrapeId]: {
+                        inputRange: data.inputRange
+                    }
+                }
+            } else {
+                database.scrapeOptions = {
+                    ...db.scrapeOptions,
+                    [data.scrapeId]: {
+                        ...db.scrapeOptions[data.scrapeId],
+                        inputRange: {
+                            ...db.scrapeOptions[data.scrapeId].inputRange,
+                            ...data.inputRange
+                        }
+                    }
+                }
+            }
+
+            return database;
+        }
+        case 'scrapeOptions': {
             return {
                 ...db,
                 scrapeOptions: {
                     ...db.scrapeOptions,
                     [data.scrapeId]: {
                         ...db.scrapeOptions[data.scrapeId],
-                        inputRange: data.inputRange
+                        [data.name]: data.options
                     }
                 }
-            }
+            };
         }
         case 'quotes': {
             return {
@@ -25,7 +64,7 @@ const dbReducer = (db, { type, data }) => {
                     ...db[data.scrapeId],
                     quotes: data.quotes
                 }
-            }
+            };
         }
         case 'input': {
             return {
@@ -41,7 +80,7 @@ const dbReducer = (db, { type, data }) => {
                         }
                     }
                 }
-            }
+            };
         }
         case 'inputRange': {
             let inputRange;
@@ -61,7 +100,7 @@ const dbReducer = (db, { type, data }) => {
                     ...db[data.scrapeId],
                     inputRange
                 }
-            }
+            };
         }
         default: {
             return db;
@@ -75,3 +114,4 @@ const saveToDb = ({ type, data }) => {
 
 module.exports.getDb = getDb;
 module.exports.saveToDb = saveToDb;
+module.exports.initDb = initDb;

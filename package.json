@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js --inspect",
+    "scrape-options": "node index.js --inspect -- -scrapeOptions=true",
     "start2": "inspect --debug-brk index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

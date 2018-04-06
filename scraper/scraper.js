@@ -60,28 +60,32 @@ const scrape = async ({
         page,
         utils.database,
         scrapeId,
-        true
+        true,
+        scrapeOptions
     );
     await utils.timing.loaded(page, loadTime);
     await navigation.details.riderDetails(
         page,
         utils.database,
         scrapeId,
-        true
+        true,
+        scrapeOptions
     );
     await utils.timing.loaded(page, loadTime);
     await navigation.details.bikeDetails(
         page,
         utils.database,
         scrapeId,
-        true
+        true,
+        scrapeOptions
     );
     await utils.timing.loaded(page, loadTime);
     await navigation.details.coverDetails(
         page,
         utils.database,
         scrapeId,
-        true
+        true,
+        scrapeOptions
     );
 
     if (!scrapeOptions) {

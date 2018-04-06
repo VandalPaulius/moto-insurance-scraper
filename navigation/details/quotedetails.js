@@ -579,26 +579,9 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
         vehicleDropdown: '#ctl00_cphBody_qsVehicleSelection_qConfirmVehicleDontKnowReg_cboAnswer'
     }
 
-    const bikeDetailsOptions = {
-        manufactureYear: {
-            from: '1900',
-            to: '2018'
-        },
-        engineSize: {
-            isElectric: [
-                true,
-                false
-            ],
-            engineCC: {
-                from: '1',
-                to: '3000'
-            }
-        }
-    };
-
     // const bikeDetailsOptions = {
     //     manufactureYear: {
-    //         from: '2014',//'1900',
+    //         from: '1900',
     //         to: '2018'
     //     },
     //     engineSize: {
@@ -607,11 +590,29 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
     //             false
     //         ],
     //         engineCC: {
-    //             from: '123',//'1',
-    //             to: '125' //'3000'
+    //             from: '1',
+    //             to: '3000'
     //         }
     //     }
     // };
+
+    const bikeDetailsOptions = {
+        manufactureYear: {
+            from: '2014',//'1900',
+            to: '2018'
+        },
+        engineSize: {
+            isElectric: [
+                true,
+                false
+            ],
+            engineCC: {
+                from: '123',//'1',
+                to: '125' //'3000'
+            }
+        },
+        bikes: []
+    };
 
     const selectMake = async (page, selector, bikeMake) => {
         const options = await utils.helpers.getOptions(page, selector)
@@ -799,11 +800,17 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
             }
         }
 
+        const bikesTempFlattened = flatten(bikesTemp); // remove duplicates
+        
         bikeDetailsOptions.bikes.push({
             brand: manufacturer,
             bikes: flatten(bikesTemp)
         })
-        
+        // bikeDetailsOptions.bikes.push({
+        //     brand: manufacturer,
+        //     bikes: flatten(bikesTemp)
+        // })
+        break; // dev
     }
 
     return bikeDetailsOptions;
@@ -854,18 +861,27 @@ const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions) =
         continueToNext: '#ctl00_btnNext'
     }
 
-    const inputRange = db.getDb()[scrapeId].inputRange;
-
     if (scrapeOptions) {
-        const inputOptions = {
+        const inputRange = db.getDb().scrapeOptions[scrapeId].inputRange;
+        //console.log('miau 1')
+
+        const quoteDetails = {
             personalDetails: await personalScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.personalDetails),
             addressDetails: await addressScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.addressDetails),
             bikeDetails: await bikeDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.bikeDetails),
             coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
         };
 
-        // save to DB
+        db.saveToDb({
+            type: 'scrapeOptions',
+            data: {
+                name: 'quoteDetails',
+                options: quoteDetails
+            }
+        })
     } else {
+        const inputRange = db.getDb()[scrapeId].inputRange;
+
         await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
         await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
         await bikeDetails(page, db, scrapeId, inputRange.quoteDetails.bikeDetails);

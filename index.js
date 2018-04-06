@@ -25,19 +25,45 @@ const inputRange = utils.initialInputValues.initialInputValues;
 
 const scrapeId = uuidv1();
 
-scraper.scrape({
-    scrapeId,
-    inputRange,
-}).then((response) => {
-    if (typeof response === 'object') {
-        utils.database.saveToDb({
-            type: 'quotes',
-            data: {
-                scrapeId: response.scrapeId,
-                quotes: response.quotes
-            }
-        });
+utils.database.initDb();
+
+let scrapeOptions;
+
+for (let arg of process.argv) {
+    if (arg === '-scrapeOptions=true') {
+        scrapeOptions = true;
     }
-    
-    console.log('DATABASE: ', utils.database.getDb());
-});
+}
+
+if (scrapeOptions) {
+    scraper.scrape({
+        scrapeId,
+        inputRange,
+        scrapeOptions: true
+    }).then((response) => {
+        if (response) {
+            console.log('Options scraped!');
+            console.log('DATABASE: ', utils.database.getDb());
+        }
+
+        console.log('Option scraping failed.');
+        console.log('DATABASE: ', utils.database.getDb());
+    });
+} else {
+    scraper.scrape({
+        scrapeId,
+        inputRange,
+    }).then((response) => {
+        if (typeof response === 'object') {
+            utils.database.saveToDb({
+                type: 'quotes',
+                data: {
+                    scrapeId: response.scrapeId,
+                    quotes: response.quotes
+                }
+            });
+        }
+        
+        console.log('DATABASE: ', utils.database.getDb());
+    });
+}
