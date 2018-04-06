@@ -801,15 +801,15 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
         }
 
         const bikesTempFlattened = flatten(bikesTemp); // remove duplicates
+        const bikesTempFlatStrings = bikesTempFlattened.map(bike => JSON.stringify(bike));
+        const bikesNoDuplicatesStringsSet = new Set(bikesTempFlatStrings);
+        const bikesNoDuplicatesStrings = Array.from(bikesNoDuplicatesStringsSet);
         
         bikeDetailsOptions.bikes.push({
             brand: manufacturer,
-            bikes: flatten(bikesTemp)
+            bikes: bikesNoDuplicatesStrings.map(bikeString => JSON.parse(bikeString))
         })
-        // bikeDetailsOptions.bikes.push({
-        //     brand: manufacturer,
-        //     bikes: flatten(bikesTemp)
-        // })
+
         break; // dev
     }
 
@@ -872,7 +872,7 @@ const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions) =
             coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
         };
 
-        db.saveToDb({
+        db.saveToDb({ // breaks for some reason
             type: 'scrapeOptions',
             data: {
                 name: 'quoteDetails',
@@ -888,9 +888,9 @@ const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions) =
         await coverDetails(page, db, scrapeId, inputRange.quoteDetails.coverDetails);
     }
 
-    if (continueToNext) {
-        await page.click(selectors.continueToNext);
-    }
+    // if (continueToNext) {
+    //     await page.click(selectors.continueToNext);
+    // }
 };
 
 module.exports = quoteDetails;
