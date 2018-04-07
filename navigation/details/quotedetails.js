@@ -747,6 +747,13 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
         return cleanList;
     }
 
+    const removeDuplicates = (listWithDuplicates) => {
+        const bikesTempFlatStrings = listWithDuplicates.map(bike => JSON.stringify(bike));
+        const bikesNoDuplicatesStringsSet = new Set(bikesTempFlatStrings);
+        const bikesNoDuplicatesStrings = Array.from(bikesNoDuplicatesStringsSet);
+        return bikesNoDuplicatesStrings.map(bikeString => JSON.parse(bikeString))
+    }
+
     bikeDetailsOptions.bikeMake = await getManufacturers(page, selectors.bikeMake);
     for (let manufacturer of bikeDetailsOptions.bikeMake) {
         let bikesTemp = [];
@@ -800,14 +807,11 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
             }
         }
 
-        const bikesTempFlattened = flatten(bikesTemp); // remove duplicates
-        const bikesTempFlatStrings = bikesTempFlattened.map(bike => JSON.stringify(bike));
-        const bikesNoDuplicatesStringsSet = new Set(bikesTempFlatStrings);
-        const bikesNoDuplicatesStrings = Array.from(bikesNoDuplicatesStringsSet);
+        const bikesTempFlattened = flatten(bikesTemp);
         
         bikeDetailsOptions.bikes.push({
             brand: manufacturer,
-            bikes: bikesNoDuplicatesStrings.map(bikeString => JSON.parse(bikeString))
+            bikes: removeDuplicates(bikesTempFlattened)
         })
 
         break; // dev
@@ -856,14 +860,13 @@ const coverDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
     return coverDetailsOptions;
 };
 
-const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions) => {
+const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, inputRange) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
 
     if (scrapeOptions) {
-        const inputRange = db.getDb().scrapeOptions[scrapeId].inputRange;
-        //console.log('miau 1')
+        //const inputRange = db.getDb().scrapeOptions[scrapeId].inputRange;
 
         const quoteDetails = {
             personalDetails: await personalScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.personalDetails),
@@ -872,7 +875,7 @@ const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions) =
             coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
         };
 
-        db.saveToDb({ // breaks for some reason
+        db.saveToDb({
             type: 'scrapeOptions',
             data: {
                 name: 'quoteDetails',
@@ -880,7 +883,7 @@ const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions) =
             }
         })
     } else {
-        const inputRange = db.getDb()[scrapeId].inputRange;
+        //const inputRange = db.getDb()[scrapeId].inputRange;
 
         await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
         await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
@@ -888,9 +891,9 @@ const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions) =
         await coverDetails(page, db, scrapeId, inputRange.quoteDetails.coverDetails);
     }
 
-    // if (continueToNext) {
-    //     await page.click(selectors.continueToNext);
-    // }
+    if (continueToNext) {
+        await page.click(selectors.continueToNext);
+    }
 };
 
 module.exports = quoteDetails;

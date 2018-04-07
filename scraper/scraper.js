@@ -13,6 +13,7 @@ const scrape = async ({
     loadTime = 2000
 }) => {
     console.log('scrape it');
+
     if (scrapeOptions) {
         utils.database.saveToDb({
             type: 'scrapeOptionsInputRange',
@@ -61,7 +62,8 @@ const scrape = async ({
         utils.database,
         scrapeId,
         true,
-        scrapeOptions
+        false, // scrapeOptions,
+        inputRange
     );
     await utils.timing.loaded(page, loadTime);
     await navigation.details.riderDetails(
@@ -69,24 +71,25 @@ const scrape = async ({
         utils.database,
         scrapeId,
         true,
-        scrapeOptions
+        scrapeOptions,
+        inputRange
     );
-    await utils.timing.loaded(page, loadTime);
-    await navigation.details.bikeDetails(
-        page,
-        utils.database,
-        scrapeId,
-        true,
-        scrapeOptions
-    );
-    await utils.timing.loaded(page, loadTime);
-    await navigation.details.coverDetails(
-        page,
-        utils.database,
-        scrapeId,
-        true,
-        scrapeOptions
-    );
+    // await utils.timing.loaded(page, loadTime);
+    // await navigation.details.bikeDetails(
+    //     page,
+    //     utils.database,
+    //     scrapeId,
+    //     true,
+    //     scrapeOptions
+    // );
+    // await utils.timing.loaded(page, loadTime);
+    // await navigation.details.coverDetails(
+    //     page,
+    //     utils.database,
+    //     scrapeId,
+    //     true,
+    //     scrapeOptions
+    // );
 
     if (!scrapeOptions) {
         await utils.timing.loaded(page, loadTime);

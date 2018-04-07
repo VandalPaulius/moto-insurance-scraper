@@ -72,6 +72,10 @@ const initialInputValues = {
         }
     },
     riderDetails: {
+        claimsAndConvictions: {
+            claimsAccidents5Years: false,
+            motorConvictions: false
+        },
         ridingHistory: {
             ridingQualifications: {
                 value: '140',
@@ -136,10 +140,6 @@ const initialInputValues = {
                 text: 'Aerial Photography',
                 value: '10'
             }
-        },
-        claimsAndConvictions: {
-            claimsAccidents5Years: false,
-            motorConvictions: false
         }
     },
     bikeDetails: {

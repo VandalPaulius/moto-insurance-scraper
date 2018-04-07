@@ -18,6 +18,28 @@ const claimsAndConvictions = async (page, db, scrapeId, inputRange) => {
     await page.click(selectors.motorConvictions.no);
 }
 
+const claimsAndConvictionsScrapeOptions = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        claimsAccidents5Years: {
+            yes: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyClaims_rbAnswer1',
+            no: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyClaims_rbAnswer2'
+        },
+        motorConvictions: {
+            yes: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyConvictions_rbAnswer1',
+            no: '#ctl00_cphBody_qsClaimsAndConvictions_qAnyConvictions_rbAnswer2'
+        }
+    };
+
+    await page.click(selectors.claimsAccidents5Years.no);
+
+    await page.click(selectors.motorConvictions.no);
+
+    return {
+        claimsAccidents5Years: [ false ],
+        motorConvictions: [ false ]
+    };
+}
+
 const ridingHistory = async (page, db, scrapeId, inputRange) => {
     const selectors = {
         ridingQualificationsDropdown: '#ctl00_cphBody_qsRidingHistory_qRidingQualification_cboAnswer',
@@ -71,8 +93,8 @@ const ridingHistory = async (page, db, scrapeId, inputRange) => {
     }
 
     await page.select(
-        selectors.carLicenceDropdown,
-        inputRange.carLicence.value
+        selectors.haveCarDropdown,
+        inputRange.haveCar.value
     );
     
     // second column
@@ -117,6 +139,145 @@ const ridingHistory = async (page, db, scrapeId, inputRange) => {
     } else {
         await page.click(selectors.riddenBikeLastYear.no);
     }
+}
+
+const ridingHistoryScrapeOptions = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        ridingQualificationsDropdown: '#ctl00_cphBody_qsRidingHistory_qRidingQualification_cboAnswer',
+        bikeOrganisationDropdown: '#ctl00_cphBody_qsRidingHistory_qBikeOrgMember_cboAnswer',
+        carLicenceDropdown: '#ctl00_cphBody_qsRidingHistory_qHoldCarLicence_cboAnswer',
+        carLincenceLength: {
+            yearDropdown: '#ctl00_cphBody_qsRidingHistory_qCarLicenceLength_cboAnswerYears',
+            monthDropdown: '#ctl00_cphBody_qsRidingHistory_qCarLicenceLength_cboAnswerMonths'
+        },
+        haveCarDropdown: '#ctl00_cphBody_qsRidingHistory_qPrivateCar_cboAnswer',
+        CBT: {
+            noCBTCheckbox: '#ctl00_cphBody_qsRidingHistory_qCBTPassed_chkCheckBox',
+            year: '#ctl00_cphBody_qsRidingHistory_qCBTPassed_tbYear',
+            month: '#ctl00_cphBody_qsRidingHistory_qCBTPassed_tbMonth'
+        },
+        riddenBikeLastYear: {
+            yes: '#ctl00_cphBody_qsRidingHistory_qOwnedRiddenBike_rbAnswer1',
+            no: '#ctl00_cphBody_qsRidingHistory_qOwnedRiddenBike_rbAnswer2',
+            engineCC: '#ctl00_cphBody_qsRidingHistory_qEngineSizeCC_tbAnswer',
+            yearsRidingDropdown: '#ctl00_cphBody_qsRidingHistory_qYearsContRiding_cboAnswer'
+        }
+    };
+
+   // first column
+    await page.select(
+        selectors.ridingQualificationsDropdown,
+        inputRange.ridingQualifications.value
+    );
+
+    await page.select(
+        selectors.bikeOrganisationDropdown,
+        inputRange.bikeOrganisation.value
+    );
+
+    await page.select(
+        selectors.carLicenceDropdown,
+        inputRange.carLicence.value
+    );
+
+    await page.select(
+        selectors.carLincenceLength.yearDropdown,
+        inputRange.carLicenceLength.year.value
+    );
+    if (inputRange.carLicenceLength.year.value === '1137'
+        || inputRange.carLicenceLength.year.text === 'Less than 1'
+    ) {
+        await page.select(
+            selectors.carLincenceLength.monthDropdown,
+            inputRange.carLicenceLength.month.value
+        );
+    }
+
+    await page.select(
+        selectors.haveCarDropdown,
+        inputRange.haveCar.value
+    );
+
+    // second column
+    const isSelected = await page.evaluate((selector) => {
+        const element = document.querySelector(selector);
+        return element.checked;
+    }, selectors.CBT.noCBTCheckbox);
+
+    if (inputRange.cbtPassed.passed && isSelected) {
+        await page.click(selectors.CBT.noCBTCheckbox);
+    } else if (!inputRange.cbtPassed.passed && !isSelected) {
+        await page.click(selectors.CBT.noCBTCheckbox);
+    }
+
+    if (inputRange.cbtPassed.passed) {
+        await utils.helpers.typeClean(
+            page,
+            selectors.CBT.year,
+            inputRange.cbtPassed.year
+        );
+
+        await utils.helpers.typeClean(
+            page,
+            selectors.CBT.month,
+            inputRange.cbtPassed.month
+        );
+    }
+
+    if (inputRange.riddenBikeLastYear.ridden) {
+        await page.click(selectors.riddenBikeLastYear.yes);
+
+        await utils.helpers.typeClean(
+            page,
+            selectors.riddenBikeLastYear.engineCC,
+            inputRange.riddenBikeLastYear.engineCC
+        );
+
+        await page.select(
+            selectors.riddenBikeLastYear.yearsRidingDropdown,
+            inputRange.riddenBikeLastYear.yearsRiding.value
+        );
+    } else {
+        await page.click(selectors.riddenBikeLastYear.no);
+    }
+
+    const options = {
+        ridingQualifications: await utils.helpers.getOptions(page, selectors.ridingQualificationsDropdown),
+        bikeOrganisation: await utils.helpers.getOptions(page, selectors.bikeOrganisationDropdown),
+        carLicence: await utils.helpers.getOptions(page, selectors.carLicenceDropdown),
+        carLicenceLength: {
+            year: await utils.helpers.getOptions(page, selectors.carLincenceLength.yearDropdown),
+            month: await utils.helpers.getOptions(page, selectors.carLincenceLength.monthDropdown)
+        },
+        haveCar: await utils.helpers.getOptions(page, selectors.haveCarDropdown),
+        cbtPassed: {
+            passed: [
+                true,
+                false
+            ],
+            year: {
+                from: '1990',
+                to: '2018'
+            },
+            month: {
+                from: '1',
+                to: '12'
+            },
+        },
+        riddenBikeLastYear: {
+            ridden: [
+                true,
+                false
+            ],
+            engineCC: {
+                from: '1',
+                to: '3000'
+            },
+            yearsRiding: await utils.helpers.getOptions(page, selectors.riddenBikeLastYear.yearsRidingDropdown)
+        }
+    };
+
+    return options;
 }
 
 const generalDetails = async (page, db, scrapeId, inputRange) => {
@@ -198,40 +359,61 @@ const occupationDetails = async (page, db, scrapeId, inputRange) => {
     );
 }
 
-const riderDetails = async (page, db, scrapeId, continueToNext) => {
+const riderDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, inputRange) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
 
-    const inputRange = db.getDb()[scrapeId].inputRange;
+    if (scrapeOptions) {
+        const riderDetails = {
+            claimsAndConvictions: await claimsAndConvictionsScrapeOptions(
+                page,
+                db,
+                scrapeId,
+                inputRange.riderDetails.claimsAndConvictions
+            ),
+            ridingHistory: await ridingHistoryScrapeOptions(
+                page,
+                db,
+                scrapeId,
+                inputRange.riderDetails.ridingHistory
+            ),
+            // bikeDetails: await bikeDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.bikeDetails),
+            // coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
+        };
 
-    await claimsAndConvictions(
-        page,
-        db,
-        scrapeId,
-        inputRange.riderDetails.claimsAndConvictions
-    );
+        console.log('riderDetails', riderDetails)
 
-    await ridingHistory(
-        page,
-        db,
-        scrapeId,
-        inputRange.riderDetails.ridingHistory
-    );
-
-    await generalDetails(
-        page,
-        db,
-        scrapeId,
-        inputRange.riderDetails.generalDetails
-    );
-
-    await occupationDetails(
-        page,
-        db,
-        scrapeId,
-        inputRange.riderDetails.occupationDetails
-    );
+        // save to DB
+    } else {
+        await claimsAndConvictions(
+            page,
+            db,
+            scrapeId,
+            inputRange.riderDetails.claimsAndConvictions
+        );
+    
+        await ridingHistory(
+            page,
+            db,
+            scrapeId,
+            inputRange.riderDetails.ridingHistory
+        );
+    
+        await generalDetails(
+            page,
+            db,
+            scrapeId,
+            inputRange.riderDetails.generalDetails
+        );
+    
+        await occupationDetails(
+            page,
+            db,
+            scrapeId,
+            inputRange.riderDetails.occupationDetails
+        );
+    }
 
     if (continueToNext) {
         await page.click(selectors.continueToNext);
