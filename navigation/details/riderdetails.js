@@ -332,6 +332,81 @@ const generalDetails = async (page, db, scrapeId, inputRange) => {
     }
 }
 
+const generalDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        medicalConditionsDropdown: '#ctl00_cphBody_qsGeneralDetails_qAnyMedConditions_cboAnswer',
+        totalBikesOwned: '#ctl00_cphBody_qsGeneralDetails_qNumberOfCars_tbAnswer',
+        otherVehiclesDropdown: '#ctl00_cphBody_qsGeneralDetails_qUseOfVehicles_cboAnswer',
+        nonMotorCriminalConvictions: {
+            yes: '#ctl00_cphBody_qsGeneralDetails_qNonMotoringConvictions_rbAnswer1',
+            no: '#ctl00_cphBody_qsGeneralDetails_qHomeOwner_rbAnswer2'
+        },
+        homeOwner: {
+            yes: '#ctl00_cphBody_qsGeneralDetails_qHomeOwner_rbAnswer1',
+            no: '#ctl00_cphBody_qsGeneralDetails_qHomeOwner_rbAnswer2'
+        },
+        childrenUnder16: {
+            yes: '#ctl00_cphBody_qsGeneralDetails_qAnyChildrenUnder16_rbAnswer1',
+            no: '#ctl00_cphBody_qsGeneralDetails_qAnyChildrenUnder16_rbAnswer2'
+        }
+    };
+
+    // first column
+    await page.select(
+        selectors.medicalConditionsDropdown,
+        inputRange.medicalConditions.value
+    );
+    
+    await utils.helpers.typeClean(
+        page,
+        selectors.totalBikesOwned,
+        inputRange.totalBikesOwned
+    );
+
+    await page.select(
+        selectors.otherVehiclesDropdown,
+        inputRange.otherVehicles.value
+    );
+
+    // second column
+    await page.click(selectors.nonMotorCriminalConvictions.no);
+
+    if (inputRange.homeOwner) {
+        await page.click(selectors.homeOwner.yes);
+    } else {
+        await page.click(selectors.homeOwner.no);
+    }
+    
+    if (inputRange.childrenUnder16) {
+        await page.click(selectors.childrenUnder16.yes);
+    } else {
+        await page.click(selectors.childrenUnder16.no);
+    }
+
+    const options = {
+        medicalConditions: await utils.helpers.getOptions(page, selectors.medicalConditionsDropdown),
+        totalBikesOwned: {
+            from: '1',
+            to: '10'
+        },
+        otherVehicles: await utils.helpers.getOptions(page, selectors.otherVehiclesDropdown),
+        nonMotorCriminalConvictions: [
+            true,
+            false
+        ],
+        homeOwner: [
+            true,
+            false
+        ],
+        childrenUnder16: [
+            true,
+            false
+        ]
+    };
+
+    return options;
+}
+
 const occupationDetails = async (page, db, scrapeId, inputRange) => {
     const selectors = {
         occupation: {
@@ -359,6 +434,39 @@ const occupationDetails = async (page, db, scrapeId, inputRange) => {
     );
 }
 
+const occupationDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        occupation: {
+            showAll: '#ctl00_cphBody_qsOccupationDetails_qFullTimeOccupation_lnkShowAll',
+            list: '#ctl00_cphBody_qsOccupationDetails_qFullTimeOccupation_lstShowAllListbox',
+            selectValue: (optionNumber) => `#ctl00_cphBody_qsOccupationDetails_qFullTimeOccupation_lstShowAllListbox > option:nth-child(${parseInt(optionNumber) + 1})`
+        },
+        business: {
+            showAll: '#ctl00_cphBody_qsOccupationDetails_qFullTimeTypeOfBusiness_lnkShowAll',
+            list: '#ctl00_cphBody_qsOccupationDetails_qFullTimeTypeOfBusiness_lstShowAllListbox',
+            selectValue: (optionNumber) => `#ctl00_cphBody_qsOccupationDetails_qFullTimeTypeOfBusiness_lstShowAllListbox > option:nth-child(${parseInt(optionNumber) + 1})`
+        }
+    };
+
+    const options = {};
+
+    await page.click(selectors.occupation.showAll);
+    await utils.timing.loaded(page);
+    options.occupation = await utils.helpers.getOptions(page, selectors.occupation.list)
+    await page.click(
+        selectors.occupation.selectValue(inputRange.occupation.value)
+    );
+
+    await page.click(selectors.business.showAll);
+    await utils.timing.loaded(page);
+    options.business = await utils.helpers.getOptions(page, selectors.business.list)
+    await page.click(
+        selectors.business.selectValue(inputRange.business.value)
+    );
+
+    return options;
+}
+
 const riderDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, inputRange) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
@@ -378,13 +486,27 @@ const riderDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, i
                 scrapeId,
                 inputRange.riderDetails.ridingHistory
             ),
-            // bikeDetails: await bikeDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.bikeDetails),
-            // coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
+            generalDetails: await generalDetailsScrapeOptions(
+                page,
+                db,
+                scrapeId,
+                inputRange.riderDetails.generalDetails
+            ),
+            occupationDetails: await occupationDetailsScrapeOptions(
+                page,
+                db,
+                scrapeId,
+                inputRange.riderDetails.occupationDetails
+            )
         };
 
-        console.log('riderDetails', riderDetails)
-
-        // save to DB
+        db.saveToDb({
+            type: 'scrapeOptions',
+            data: {
+                name: 'riderDetails',
+                options: riderDetails
+            }
+        })
     } else {
         await claimsAndConvictions(
             page,
