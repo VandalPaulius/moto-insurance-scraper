@@ -71,17 +71,17 @@ const scrape = async ({
         utils.database,
         scrapeId,
         true,
-        scrapeOptions,
+        false, // scrapeOptions,
         inputRange
     );
-    // await utils.timing.loaded(page, loadTime);
-    // await navigation.details.bikeDetails(
-    //     page,
-    //     utils.database,
-    //     scrapeId,
-    //     true,
-    //     scrapeOptions
-    // );
+    await utils.timing.loaded(page, loadTime);
+    await navigation.details.bikeDetails(
+        page,
+        utils.database,
+        scrapeId,
+        true,
+        scrapeOptions
+    );
     // await utils.timing.loaded(page, loadTime);
     // await navigation.details.coverDetails(
     //     page,

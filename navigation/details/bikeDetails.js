@@ -205,26 +205,123 @@ const bikeSecurity = async (page, db, scrapeId, inputRange) => {
     );
 }
 
-const bikeDetails = async (page, db, scrapeId, continueToNext) => {
+const bikeSecurityScrapeOptions = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        alarmImmobilizer: {
+            inputField: '#ctl00_cphBody_qsVehicleSecurity_qImmobAlarm_tbAnswer',
+            list: 'body > ul:nth-child(5)',
+            listItem: 'body > ul:nth-child(5) > li.ui-menu-item:nth-child(${number})',
+            listItemAnchor: (number) => `body > ul:nth-child(5) > li.ui-menu-item:nth-child(${number + 1}) > a`
+        },
+        mechanicalSecurity: {
+            inputField: '#ctl00_cphBody_qsVehicleSecurity_qPhysicalSecurity_tbAnswer',
+            list: 'body > ul:nth-child(6)',
+            listItem: 'body > ul:nth-child(6) > li.ui-menu-item:nth-child(${number})',
+            listItemAnchor: (number) => `body > ul:nth-child(6) > li.ui-menu-item:nth-child(${number + 1}) > a`
+        },
+        secureMarkingsDropdown: '#ctl00_cphBody_qsVehicleSecurity_qSecureMarkings_cboAnswer',
+        trackerDropdown: '#ctl00_cphBody_qsVehicleSecurity_qTracker_cboAnswer'
+    };
+
+    
+
+    const selectWeirdListItem = async (page, selector, immobilizer) => {
+        const getIndex = async (page, selector, item) => {
+            return await page.evaluate((selector, item) => {
+                const optionList = document
+                    .querySelector(selector.list)
+                    .children;
+
+                for (let i = 0; i < optionList.length; i++) {
+                    const dataContainer = optionList[i].querySelector('a');
+
+                    const pattern = new RegExp(item, 'i');
+
+                    if (pattern.test(dataContainer.innerText)) {
+                        return i;
+                    }
+                }
+            }, selector, item);
+        };
+
+        const itemIndex = await getIndex(page, selector, immobilizer);
+
+        await page.click(selector.listItemAnchor(itemIndex));
+    }
+
+    await page.click(selectors.mechanicalSecurity.inputField);
+    await selectWeirdListItem(
+        page,
+        selectors.mechanicalSecurity,
+        inputRange.mechanicalSecurity
+    );
+
+    await page.click(selectors.alarmImmobilizer.inputField);
+    await selectWeirdListItem(
+        page,
+        selectors.alarmImmobilizer,
+        inputRange.alarmImmobilizer
+    );
+
+    await page.select(
+        selectors.secureMarkingsDropdown,
+        inputRange.secureMarkings.value
+    );
+
+    await page.select(
+        selectors.trackerDropdown,
+        inputRange.tracker.value
+    );
+
+    // options scrape
+
+    const options = {
+        //alarmImmobilizer: await utils.helpers.getOptions(page, selectors.alarmImmobilizer),
+        //mechanicalSecurity: await utils.helpers.getOptions(page, selectors.mechanicalSecurity),
+        secureMarkings: await utils.helpers.getOptions(page, selectors.secureMarkingsDropdown),
+        tracker: await utils.helpers.getOptions(page, selectors.trackerDropdown)
+    };
+
+    return options;
+}
+
+const bikeDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, inputRange) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
 
-    const inputRange = db.getDb()[scrapeId].inputRange;
+    if (scrapeOptions) {
+        const bikeDetails = {
+            bikeSecurity: await bikeSecurityScrapeOptions(
+                page,
+                db,
+                scrapeId,
+                inputRange.bikeDetails.bikeSecurity
+            )
+        }
 
-    await bikeInfo(
-        page,
-        db,
-        scrapeId,
-        inputRange.bikeDetails.bikeInfo
-    );
-
-    await bikeSecurity(
-        page,
-        db,
-        scrapeId,
-        inputRange.bikeDetails.bikeSecurity
-    );
+        // db.saveToDb({
+        //     type: 'scrapeOptions',
+        //     data: {
+        //         name: 'bikeDetails',
+        //         options: bikeDetails
+        //     }
+        // });
+    } else {
+        await bikeInfo(
+            page,
+            db,
+            scrapeId,
+            inputRange.bikeDetails.bikeInfo
+        );
+    
+        await bikeSecurity(
+            page,
+            db,
+            scrapeId,
+            inputRange.bikeDetails.bikeSecurity
+        );
+    }
 
     if (continueToNext) {
         await page.click(selectors.continueToNext);
