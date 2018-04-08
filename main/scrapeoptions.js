@@ -19,14 +19,13 @@ const scrapeOptions = async (db) => {
                 startedAt
             }
         }
-    )
+    );
 
-    return 
-
-    scraper.scrape({
+    await scraper.scrape({
         scrapeId,
         inputRange,
-        scrapeOptions: true
+        scrapeOptions: true,
+        db
     }).then((response) => {
         if (!response) {
             console.log('Option scraping failed.');

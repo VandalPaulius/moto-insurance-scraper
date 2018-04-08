@@ -52,37 +52,34 @@ const dbReducer = async (db, {type, data}) => {
             }
         case 'scrapeOptionsInputRange':
             {
-                const database = {
-                    ...db,
-                    scrapeOptions: {
-                        ...db.scrapeOptions,
-                        [data.scrapeId]: {
-                            ...db.scrapeOptions[data.scrapeId]
-                        }
-                    }
+                const scrapeOption = await db
+                    .collection('SCRAPE_OPTIONS')
+                    .find({
+                        _id: data.scrapeId
+                    }).project({
+                        _id: 0,
+                        inputRange: 1
+                    }).toArray();
+
+                const inputRangeUpdated = {
+                    ...scrapeOption[0].inputRange,
+                    ...data.inputRange
                 };
 
-                if (!db.scrapeOptions[data.scrapeId]) {
-                    database.scrapeOptions = {
-                        ...db.scrapeOptions,
-                        [data.scrapeId]: {
-                            inputRange: data.inputRange
-                        }
-                    }
-                } else {
-                    database.scrapeOptions = {
-                        ...db.scrapeOptions,
-                        [data.scrapeId]: {
-                            ...db.scrapeOptions[data.scrapeId],
-                            inputRange: {
-                                ...db.scrapeOptions[data.scrapeId].inputRange,
-                                ...data.inputRange
+                await db
+                    .collection('SCRAPE_OPTIONS')
+                    .update(
+                        {
+                            _id: data.scrapeId
+                        },
+                        {
+                            $set: {
+                                inputRange: inputRangeUpdated
                             }
                         }
-                    }
-                }
+                    );
 
-                return database;
+                break;
             }
         case 'scrapeOptions':
             {
