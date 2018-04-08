@@ -16,7 +16,7 @@
             "name": "Launch Scrape Options",
             "program": "${workspaceFolder}\\index.js",
             "args": [
-                "-scrapeOptions=true"
+                "--scrape-options"
             ]
         }
     ]

@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js --inspect",
-    "scrape-options": "node index.js --inspect -- -scrapeOptions=true",
-    "start2": "inspect --debug-brk index.js",
+    "scrape-options": "node index.js --inspect -- --scrapeOptions",
+    "db-to-json": "node index.js --inspect -- --db-to-json",
+    "generate-input-range": "node index.js --inspect -- --generate-input-range",
+    "scrape-quotes": "node index.js --inspect -- --scrape-quotes",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -28,6 +30,8 @@
     "cwd": "^0.10.0",
     "dotenv": "^5.0.1",
     "inspect-process": "^0.5.0",
+    "mongodb": "^3.0.5",
+    "mongoose": "^5.0.13",
     "puppeteer": "^1.2.0",
     "uuid": "^3.2.1"
   }
