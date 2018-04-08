@@ -860,7 +860,7 @@ const coverDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
     return coverDetailsOptions;
 };
 
-const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, inputRange) => {
+const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scrapeOptions, inputRange) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
@@ -875,13 +875,16 @@ const quoteDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, i
             coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
         };
 
-        db.saveToDb({
-            type: 'scrapeOptions',
-            data: {
-                name: 'quoteDetails',
-                options: quoteDetails
+        await db.saveToDb(
+            dbInstance,
+            {
+                type: 'scrapeOptions',
+                data: {
+                    name: 'quoteDetails',
+                    options: quoteDetails
+                }
             }
-        })
+        )
     } else {
         //const inputRange = db.getDb()[scrapeId].inputRange;
 

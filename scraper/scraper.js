@@ -64,14 +64,15 @@ const scrape = async ({
 
     await navigation.dashboard.newQuote(page);
 
-    // await navigation.details.quoteDetails(
-    //     page,
-    //     utils.database,
-    //     scrapeId,
-    //     true,
-    //     false, // scrapeOptions,
-    //     inputRange
-    // );
+    await navigation.details.quoteDetails(
+        page,
+        utils.database,
+        db,
+        scrapeId,
+        true,
+        scrapeOptions,
+        inputRange
+    );
     // await utils.timing.loaded(page, loadTime);
     // await navigation.details.riderDetails(
     //     page,

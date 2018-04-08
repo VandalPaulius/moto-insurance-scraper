@@ -28,71 +28,86 @@ const getDb = () => {
     return database;
 }
 
-const dbReducer = async (db, {type, data}) => {
+const dbReducer = async(db, {type, data}) => {
     switch (type) {
         case 'scrapeOptionsSaveStartedDate':
             {
-                db
+                await db
                     .collection('SCRAPE_OPTIONS')
-                    .insert({
-                        _id: data.scrapeId,
-                        startedAt: data.startedAt
-                    });
+                    .save({_id: data.scrapeId, startedAt: data.startedAt});
+
                 break;
             }
         case 'scrapeOptionsSaveEndedDate':
             {
-                db
+                await db
                     .collection('SCRAPE_OPTIONS')
-                    .insert({
-                        _id: data.scrapeId,
-                        startedAt: data.endedAt
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            endedAt: data.endedAt
+                        }
                     });
                 break;
             }
         case 'scrapeOptionsInputRange':
             {
-                const scrapeOption = await db
+                const inputRangeFromDb = await db
                     .collection('SCRAPE_OPTIONS')
-                    .find({
-                        _id: data.scrapeId
-                    }).project({
-                        _id: 0,
-                        inputRange: 1
-                    }).toArray();
+                    .find({_id: data.scrapeId})
+                    .project({_id: 0, inputRange: 1})
+                    .toArray();
 
-                const inputRangeUpdated = {
-                    ...scrapeOption[0].inputRange,
+                let inputRangeUpdated = inputRangeFromDb[0]
+                    ? inputRangeFromDb[0]
+                    : {};
+
+                inputRangeUpdated = {
+                    ...inputRangeUpdated,
                     ...data.inputRange
-                };
+                }
 
                 await db
                     .collection('SCRAPE_OPTIONS')
-                    .update(
-                        {
-                            _id: data.scrapeId
-                        },
-                        {
-                            $set: {
-                                inputRange: inputRangeUpdated
-                            }
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            inputRange: inputRangeUpdated
                         }
-                    );
+                    });
 
                 break;
             }
         case 'scrapeOptions':
             {
-                return {
-                    ...db,
-                    scrapeOptions: {
-                        ...db.scrapeOptions,
-                        [data.scrapeId]: {
-                            ...db.scrapeOptions[data.scrapeId],
-                            [data.name]: data.options
+                const scrapeOptions = await db
+                    .collection('SCRAPE_OPTIONS')
+                    .find({_id: data.scrapeId})
+                    .project({_id: 0, scrapeOptions: 1})
+                    .toArray()[0];
+
+                let scrapeOptionsFilled = scrapeOptions
+                    ? scrapeOptions
+                    : {};
+
+                scrapeOptionsFilled = {
+                    ...scrapeOptionsFilled,
+                    [data.name]: data.options
+                }
+
+                await db
+                    .collection('SCRAPE_OPTIONS')
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            scrapeOptions: scrapeOptionsFilled
                         }
-                    }
-                };
+                    });
+
+                break;
             }
         case 'quotes':
             {

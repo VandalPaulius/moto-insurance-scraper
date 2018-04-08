@@ -26,20 +26,23 @@ const scrapeOptions = async (db) => {
         inputRange,
         scrapeOptions: true,
         db
-    }).then((response) => {
+    }).then(async (response) => {
         if (!response) {
             console.log('Option scraping failed.');
             console.log('DATABASE: ', utils.database.getDb());
         }
 
         const endedAt = new Date;
-        utils.database.saveToDb({
-            type: 'scrapeOptionsSaveEndedDate',
-            data: {
-                scrapeId,
-                startedAt
+        await utils.database.saveToDb(
+            db,
+                {
+                type: 'scrapeOptionsSaveEndedDate',
+                data: {
+                    scrapeId,
+                    endedAt
+                }
             }
-        })
+        )
         console.log('Options scraped!');
         console.log('DATABASE: ', utils.database.getDb());
     });

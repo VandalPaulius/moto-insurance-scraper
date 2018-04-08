@@ -85,11 +85,8 @@ const distributor = async () => {
 
     let options;
 
-    console.log('process: ', process)
-
     for (let arg of process.argv) {
         let stop = false;
-        console.log('arg: ',arg)
 
         switch (arg) {
             case '--scrape-options': {
@@ -120,6 +117,7 @@ const distributor = async () => {
     }
 
     console.log('Exiting gracefully.');
+    process.exit(0);
     return;
 };
 
