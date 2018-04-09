@@ -21,7 +21,6 @@ const scrapeOptions = async (db) => {
     );
 
     const scrape = async ({
-        //slowMo,
         loadTime,
         browser
     }) => {
@@ -30,7 +29,6 @@ const scrapeOptions = async (db) => {
             inputRange,
             scrapeOptions: true,
             db,
-            //slowMo,
             loadTime,
             browser
         }).then(async (response) => {
