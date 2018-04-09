@@ -70,7 +70,7 @@ const scrape = async ({
         db,
         scrapeId,
         true,
-        true, //false, //scrapeOptions,
+        scrapeOptions,
         inputRange,
         true // scrapeFewBikes :dev
     );
@@ -81,7 +81,7 @@ const scrape = async ({
         db,
         scrapeId,
         true,
-        false, //scrapeOptions,
+        scrapeOptions,
         inputRange
     );
     await utils.timing.loaded(page, loadTime);
@@ -91,7 +91,7 @@ const scrape = async ({
         db,
         scrapeId,
         true,
-        false, //scrapeOptions,
+        scrapeOptions,
         inputRange
     );
     await utils.timing.loaded(page, loadTime);
@@ -101,7 +101,7 @@ const scrape = async ({
         db,
         scrapeId,
         scrapeOptions ? false: true, // continue to next
-        false, //scrapeOptions,
+        scrapeOptions,
         inputRange
     );
 
@@ -115,7 +115,7 @@ const scrape = async ({
         await navigation.main.logout(page, true);
     }
 
-    //await browser.close();
+    await browser.close();
 
     if (scrapeOptions) {
         return true;

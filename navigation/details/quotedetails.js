@@ -596,7 +596,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
     //     }
     // };
 
-    const bikeDetailsOptions = {
+    const bikeDetailsOptions = { // dev
         manufactureYear: {
             from: '2014',//'1900',
             to: '2018'
