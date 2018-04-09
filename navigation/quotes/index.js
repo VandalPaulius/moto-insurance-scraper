@@ -1,0 +1,1 @@
+exports.getQuotes = require('./getquotes');
