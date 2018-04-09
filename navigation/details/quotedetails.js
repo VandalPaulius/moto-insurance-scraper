@@ -404,8 +404,8 @@ const personalScrapeOptions = async (page, db, scrapeId, inputRange) => {
 
     // option scrape
     const personalDetails = {
-        title: await utils.helpers.getOptions(page, selectors.titleDropdown),
-        maritalStatus: await utils.helpers.getOptions(page, selectors.maritalStatus),
+        title: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.titleDropdown)),
+        maritalStatus: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.maritalStatus)),
         ukResidentFrom: {
             birth: [
                 true,
@@ -420,15 +420,15 @@ const personalScrapeOptions = async (page, db, scrapeId, inputRange) => {
                 to: '2018'
             }
         },
-        employmentDropdown: await utils.helpers.getOptions(page, selectors.maritalStatus),
+        employmentDropdown: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.maritalStatus)),
         partTimeEmploymentLess16Hrs: [
             true,
             false
         ],
-        licenceType: await utils.helpers.getOptions(page, selectors.licenceType),
+        licenceType: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.licenceType)),
         selectedLicenceLength: {
-            year: await utils.helpers.getOptions(page, selectors.howLongLicence.year),
-            month: await utils.helpers.getOptions(page, selectors.howLongLicence.month)
+            year: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.howLongLicence.year)),
+            month: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.howLongLicence.month))
         }
     };
 
@@ -853,10 +853,10 @@ const coverDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
     );
 
     const coverDetailsOptions = {
-        coverType: await utils.helpers.getOptions(page, selectors.coverType),
-        bikeNoClaims: await utils.helpers.getOptions(page, selectors.bikeNoClaims),
-        ridersCount: await utils.helpers.getOptions(page, selectors.ridersCount),
-        bikeUse: await utils.helpers.getOptions(page, selectors.bikeUse)
+        coverType: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.coverType)),
+        bikeNoClaims: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.bikeNoClaims)),
+        ridersCount: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.ridersCount)),
+        bikeUse: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.bikeUse))
     };
 
     return coverDetailsOptions;

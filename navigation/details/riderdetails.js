@@ -241,15 +241,17 @@ const ridingHistoryScrapeOptions = async (page, db, scrapeId, inputRange) => {
         await page.click(selectors.riddenBikeLastYear.no);
     }
 
+    // scrape options
+
     const options = {
         ridingQualifications: await utils.helpers.getOptions(page, selectors.ridingQualificationsDropdown),
         bikeOrganisation: await utils.helpers.getOptions(page, selectors.bikeOrganisationDropdown),
-        carLicence: await utils.helpers.getOptions(page, selectors.carLicenceDropdown),
+        carLicence: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.carLicenceDropdown)),
         carLicenceLength: {
-            year: await utils.helpers.getOptions(page, selectors.carLincenceLength.yearDropdown),
-            month: await utils.helpers.getOptions(page, selectors.carLincenceLength.monthDropdown)
+            year: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.carLincenceLength.yearDropdown)),
+            month: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.carLincenceLength.monthDropdown))
         },
-        haveCar: await utils.helpers.getOptions(page, selectors.haveCarDropdown),
+        haveCar: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.haveCarDropdown)),
         cbtPassed: {
             passed: [
                 true,
@@ -389,7 +391,7 @@ const generalDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
             from: '1',
             to: '10'
         },
-        otherVehicles: await utils.helpers.getOptions(page, selectors.otherVehiclesDropdown),
+        otherVehicles: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.otherVehiclesDropdown)),
         nonMotorCriminalConvictions: [
             true,
             false

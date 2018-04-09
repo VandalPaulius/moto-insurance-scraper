@@ -70,7 +70,7 @@ const scrape = async ({
         db,
         scrapeId,
         true,
-        false, //scrapeOptions,
+        true, //false, //scrapeOptions,
         inputRange
     );
     await utils.timing.loaded(page, loadTime);
@@ -99,8 +99,8 @@ const scrape = async ({
         utils.database,
         db,
         scrapeId,
-        true,
-        scrapeOptions,
+        scrapeOptions ? false: true, // continue to next
+        false, //scrapeOptions,
         inputRange
     );
 

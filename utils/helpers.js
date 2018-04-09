@@ -33,6 +33,16 @@ const getOptions = async (page, selector) => {
     }, selector);
 }
 
+const removePleaseSelect = (list) => {
+    const pattern = new RegExp('Please select', 'ig')
+
+    return list.filter(item => {
+        if (!pattern.test(item.text)) {
+            return item;
+        }
+    });
+}
+
 const selectYesNo = async (page, selectors, yes) => {
     if (yes) {
         await page.click(selectors.yes);
@@ -45,3 +55,4 @@ module.exports.checkbox = checkbox;
 module.exports.typeClean = typeClean;
 module.exports.getOptions = getOptions;
 module.exports.selectYesNo = selectYesNo;
+module.exports.removePleaseSelect = removePleaseSelect;

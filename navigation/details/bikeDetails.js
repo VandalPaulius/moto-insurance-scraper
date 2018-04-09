@@ -138,6 +138,191 @@ const bikeInfo = async (page, db, scrapeId, inputRange) => {
     );
 }
 
+const bikeInfoScrapeOptions = async (page, db, scrapeId, inputRange) => {
+    const selectors = {
+        purchaseDate: {
+            notBought: '#ctl00_cphBody_qsVehicleDetails_qPurchaseDate_chkCheckBox',
+            year: '#ctl00_cphBody_qsVehicleDetails_qPurchaseDate_tbYear',
+            month: '#ctl00_cphBody_qsVehicleDetails_qPurchaseDate_tbMonth'
+        },
+        sideCar: {
+            yes: '#ctl00_cphBody_qsVehicleDetails_qFittedWithSideCar_rbAnswer1',
+            no: '#ctl00_cphBody_qsVehicleDetails_qFittedWithSideCar_rbAnswer2'
+        },
+        includePillion: {
+            yes: '#ctl00_cphBody_qsVehicleDetails_qPillionUsed_rbAnswer1',
+            no: '#ctl00_cphBody_qsVehicleDetails_qPillionUsed_rbAnswer2'
+        },
+        usedToTow: {
+            yes: '#ctl00_cphBody_qsVehicleDetails_qUsedToTow_rbAnswer1',
+            no: '#ctl00_cphBody_qsVehicleDetails_qUsedToTow_rbAnswer2'
+        },
+        previouslyInsured: {
+            yes: '#ctl00_cphBody_qsVehicleDetails_qPreviouslyInsured_rbAnswer1',
+            no: '#ctl00_cphBody_qsVehicleDetails_qPreviouslyInsured_rbAnswer2'
+        },
+        modified: {
+            yes: '#ctl00_cphBody_qsVehicleDetails_qModified_rbAnswer1',
+            no: '#ctl00_cphBody_qsVehicleDetails_qModified_rbAnswer2'
+        },
+        bikeValue: '#ctl00_cphBody_qsVehicleDetails_qVehicleValue_tbAnswer',
+        bikeOvernightParking: '#ctl00_cphBody_qsVehicleDetails_qParkedOvernight_cboAnswer',
+        bikeImported: '#ctl00_cphBody_qsVehicleDetails_qImported_cboAnswer',
+        registeredKeeper: '#ctl00_cphBody_qsVehicleDetails_qRegisteredKeeper_cboAnswer',
+        legalOwner: '#ctl00_cphBody_qsVehicleDetails_qLegalOwner_cboAnswer'
+    };
+
+    // first column
+    const isSelected = await page.evaluate((selector) => {
+        const element = document.querySelector(selector);
+        return element.checked;
+    }, selectors.purchaseDate.notBought);
+
+    if (inputRange.purchaseDate.alreadyBought) {
+        
+        if (isSelected) {
+            await page.click(selectors.purchaseDate.notBought);
+        }
+        
+        await utils.helpers.typeClean(
+            page,
+            selectors.purchaseDate.month,
+            inputRange.purchaseDate.month
+        );
+        await utils.helpers.typeClean(
+            page,
+            selectors.purchaseDate.year,
+            inputRange.purchaseDate.year
+        );
+    } else {
+        if (!isSelected) {
+            await page.click(selectors.purchaseDate.notBought);
+        }
+    }
+
+    await utils.helpers.selectYesNo(
+        page,
+        {
+            yes: selectors.sideCar.yes,
+            no: selectors.sideCar.no
+        },
+        inputRange.sideCar
+    );
+
+    await utils.helpers.selectYesNo(
+        page,
+        {
+            yes: selectors.includePillion.yes,
+            no: selectors.includePillion.no
+        },
+        inputRange.sideincludePillionCar
+    );
+
+    await utils.helpers.selectYesNo(
+        page,
+        {
+            yes: selectors.usedToTow.yes,
+            no: selectors.usedToTow.no
+        },
+        inputRange.usedToTow
+    );
+
+    if (inputRange.purchaseDate.alreadyBought) {
+        await utils.helpers.selectYesNo(
+            page,
+            {
+                yes: selectors.previouslyInsured.yes,
+                no: selectors.previouslyInsured.no
+            },
+            inputRange.previouslyInsured
+        );
+    }
+    
+    await utils.helpers.selectYesNo(
+        page,
+        {
+            yes: selectors.modified.yes,
+            no: selectors.modified.no
+        },
+        inputRange.modified
+    ); // no implementation of modification dialog yet
+
+    // second column
+    await utils.helpers.typeClean(
+        page,
+        selectors.bikeValue,
+        inputRange.bikeValue
+    );
+
+    await page.select(
+        selectors.bikeOvernightParking,
+        inputRange.bikeOvernightParking.value
+    );
+
+    await page.select(
+        selectors.bikeImported,
+        inputRange.bikeImported.value
+    );
+
+    await page.select(
+        selectors.registeredKeeper,
+        inputRange.registeredKeeper.value
+    );
+
+    await page.select(
+        selectors.legalOwner,
+        inputRange.legalOwner.value
+    );
+
+    // options scrape
+
+    const options = {
+        purchaseDate: {
+            alreadyBought: [
+                true,
+                false
+            ],
+            year: {
+                from: '1900',
+                to: '2018'
+            },
+            month: {
+                from: '1',
+                to: '12'
+            }
+        },
+        sideCar: [
+            true,
+            false
+        ],
+        includePillion: [
+            true,
+            false
+        ],
+        usedToTow: [
+            true,
+            false
+        ],
+        previouslyInsured: [
+            true,
+            false
+        ],
+        modified: [
+            false
+        ],
+        bikeValue: {
+            from: '1',
+            to: '100000'
+        },
+        bikeOvernightParking: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.bikeOvernightParking)),
+        bikeImported: await utils.helpers.getOptions(page, selectors.bikeImported),
+        registeredKeeper: await utils.helpers.getOptions(page, selectors.registeredKeeper),
+        legalOwner: await utils.helpers.getOptions(page, selectors.legalOwner)
+    };
+
+    return options;
+}
+
 const bikeSecurity = async (page, db, scrapeId, inputRange) => {
     const selectors = {
         alarmImmobilizer: {
@@ -303,7 +488,13 @@ const bikeDetails = async (page, db, dbInstance, scrapeId, continueToNext, scrap
     }
 
     if (scrapeOptions) {
-        const bikeDetails = {
+        const bikeDetails = { // still need bikeInfo
+            bikeInfo: await bikeInfoScrapeOptions(
+                page,
+                db,
+                scrapeId,
+                inputRange.bikeDetails.bikeInfo
+            ),
             bikeSecurity: await bikeSecurityScrapeOptions(
                 page,
                 db,
