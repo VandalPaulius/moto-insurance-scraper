@@ -868,8 +868,6 @@ const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scra
     }
 
     if (scrapeOptions) {
-        //const inputRange = db.getDb().scrapeOptions[scrapeId].inputRange;
-
         const quoteDetails = {
             personalDetails: await personalScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.personalDetails),
             addressDetails: await addressScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.addressDetails),
@@ -891,7 +889,6 @@ const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scra
             }
         );
     } else {
-        //const inputRange = db.getDb()[scrapeId].inputRange;
 
         await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
         await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
