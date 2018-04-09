@@ -3,12 +3,11 @@ const scrapeOptions = async (db) => {
     const scraper = require(cwd('scraper'));
     const utils = require(cwd('utils'));
     const uuidv1 = require('uuid/v1');
+    const puppeteer = require('puppeteer');
 
     const scrapeId = uuidv1();
     const inputRange = utils.initialInputValues.initialInputValues;
     const startedAt = new Date;
-
-    // const collection = await db.collection('SCRAPE_OPTIONS');
 
     await utils.database.saveToDb(
         db,
@@ -22,16 +21,18 @@ const scrapeOptions = async (db) => {
     );
 
     const scrape = async ({
-        slowMo,
-        loadTime
+        //slowMo,
+        loadTime,
+        browser
     }) => {
         await scraper.scrape({
             scrapeId,
             inputRange,
             scrapeOptions: true,
             db,
-            slowMo,
-            loadTime
+            //slowMo,
+            loadTime,
+            browser
         }).then(async (response) => {
             if (!response) {
                 console.log('Option scraping failed.');
@@ -57,6 +58,8 @@ const scrapeOptions = async (db) => {
     const retries = parseInt(process.env.OPTIONS_SCRAPE_RETRIES);
 
     for (let i = 0; i < retries; i++) {
+        let browser = {};
+
         try {
             let slowMo = 20;
             let loadTime = 2000;
@@ -66,14 +69,27 @@ const scrapeOptions = async (db) => {
                 loadTime = loadTime * ( i + 2 );
             }
 
-            await scrape({
-                slowMo,
-                loadTime
+            browser = await puppeteer.launch({
+                headless: false, // dev = false, prod = true,
+                slowMo: slowMo // for fully operational mode
             });
+
+            await scrape({
+                loadTime,
+                browser
+            });
+
+            await browser.close();
 
             console.log('Options scraped successfully');
             break;
         } catch(error) {
+            try {
+                await browser.close();
+            } catch (err) {
+                console.error('Cannot close browser.');
+            };
+            
             let message = '';
             let shouldBreak;
 

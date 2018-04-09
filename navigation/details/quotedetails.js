@@ -576,6 +576,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
             engineCC: '#ctl00_cphBody_qsVehicleSelection_qEngineSizeCC_tbAnswer'
         },
         findVehicleButton: '#ctl00_cphBody_qsVehicleSelection_btnVehicleLookupDontKnowRegButton_btnVehicleLookup',
+        findVehicleLoadingDiv: '#ctl00_cphBody_qsVehicleSelection_btnVehicleLookupDontKnowRegButton_ucPleaseWait_divPleaseWait',
         vehicleDropdown: '#ctl00_cphBody_qsVehicleSelection_qConfirmVehicleDontKnowReg_cboAnswer'
     }
 
@@ -693,6 +694,8 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         return list;
     }
 
+
+
     if (inputRange.knowRegNumber) {
         await page.click(selectors.knowRegNumber.yes);
     } else {
@@ -710,6 +713,30 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         20
     );
 
+    const waitForBikesLoad = async () => {
+        do {
+            try {
+                await page.waitFor(30); // to not bash CPU
+                const shouldReturn = await page.evaluate(({ selector }) => {
+                    const loadingDiv = document.querySelector(selector);
+
+                    if (loadingDiv.style.display === 'none') {
+                        return true;
+                    }
+                }, {
+                    selector: selectors.findVehicleLoadingDiv
+                })
+
+                if (shouldReturn) {
+                    return;
+                }
+            } catch (error) {
+                await page.waitFor(30); // wait for loading modal disappear
+                return;
+            }
+        } while (true);
+    };
+
     const getBikes = async (
         page,
         {
@@ -718,7 +745,8 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         }
     ) => {
         await page.click(findVehicleButton);
-        await utils.timing.loaded(page);
+        await utils.timing.loaded(page, 50);
+        await waitForBikesLoad();
 
         const vehicleList = await utils.helpers.getOptions(
             page,
@@ -758,7 +786,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
     bikeDetailsOptions.bikeMake = await getManufacturers(page, selectors.bikeMake);
     
 
-    // for (let manufacturer of bikeDetailsOptions.bikeMake) {
     for (let makerIndex = 0; makerIndex < bikeDetailsOptions.bikeMake.length; makerIndex++) {
         let manufacturer = bikeDetailsOptions.bikeMake[makerIndex]
         let bikesTemp = [];
@@ -826,7 +853,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         }
     }
    
-    
     return bikeDetailsOptions;
 };
 

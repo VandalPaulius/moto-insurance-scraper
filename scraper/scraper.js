@@ -8,10 +8,9 @@ const scrape = async ({
     debug = false,
     scrapeOptions = false,
     inputRange,
-    headless = false, // dev = false, prod = true
-    slowMo = 0,
     loadTime = 2000,
-    db
+    db,
+    browser
 }) => {
     console.log('scrape it');
 
@@ -41,10 +40,6 @@ const scrape = async ({
    
     const quotes = []
 
-    const browser = await puppeteer.launch({
-        headless,
-        slowMo: slowMo // for fully operational mode
-    });
     const page = await browser.newPage();
 
     if (debug) {
@@ -72,7 +67,7 @@ const scrape = async ({
         true,
         scrapeOptions,
         inputRange,
-        true // scrapeFewBikes :dev
+        true // scrapeFewBikes :dev @ scrapeOptions
     );
     await utils.timing.loaded(page, loadTime);
     await navigation.details.riderDetails(
@@ -81,7 +76,7 @@ const scrape = async ({
         db,
         scrapeId,
         true,
-        scrapeOptions,
+        false, //scrapeOptions,
         inputRange
     );
     await utils.timing.loaded(page, loadTime);
@@ -91,7 +86,7 @@ const scrape = async ({
         db,
         scrapeId,
         true,
-        scrapeOptions,
+        false, //scrapeOptions,
         inputRange
     );
     await utils.timing.loaded(page, loadTime);
@@ -101,7 +96,7 @@ const scrape = async ({
         db,
         scrapeId,
         scrapeOptions ? false: true, // continue to next
-        scrapeOptions,
+        false, //scrapeOptions,
         inputRange
     );
 
@@ -114,8 +109,6 @@ const scrape = async ({
         );
         await navigation.main.logout(page, true);
     }
-
-    await browser.close();
 
     if (scrapeOptions) {
         return true;
