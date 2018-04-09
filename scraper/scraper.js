@@ -73,15 +73,16 @@ const scrape = async ({
         scrapeOptions,
         inputRange
     );
-    // await utils.timing.loaded(page, loadTime);
-    // await navigation.details.riderDetails(
-    //     page,
-    //     utils.database,
-    //     scrapeId,
-    //     true,
-    //     false, // scrapeOptions,
-    //     inputRange
-    // );
+    await utils.timing.loaded(page, loadTime);
+    await navigation.details.riderDetails(
+        page,
+        utils.database,
+        db,
+        scrapeId,
+        true,
+        scrapeOptions,
+        inputRange
+    );
     // await utils.timing.loaded(page, loadTime);
     // await navigation.details.bikeDetails(
     //     page,

@@ -817,6 +817,8 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
         break; // dev
     }
 
+
+
     return bikeDetailsOptions;
 };
 
@@ -875,6 +877,8 @@ const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scra
             coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
         };
 
+        await bikeDetails(page, db, scrapeId, inputRange.quoteDetails.bikeDetails); // input required field to continue
+
         await db.saveToDb(
             dbInstance,
             {
@@ -885,7 +889,7 @@ const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scra
                     options: quoteDetails
                 }
             }
-        )
+        );
     } else {
         //const inputRange = db.getDb()[scrapeId].inputRange;
 

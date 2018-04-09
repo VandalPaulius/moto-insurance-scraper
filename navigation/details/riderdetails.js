@@ -467,7 +467,7 @@ const occupationDetailsScrapeOptions = async (page, db, scrapeId, inputRange) =>
     return options;
 }
 
-const riderDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, inputRange) => {
+const riderDetails = async (page, db, dbInstance, scrapeId, continueToNext, scrapeOptions, inputRange) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
@@ -500,13 +500,17 @@ const riderDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, i
             )
         };
 
-        db.saveToDb({
-            type: 'scrapeOptions',
-            data: {
-                name: 'riderDetails',
-                options: riderDetails
+        await db.saveToDb(
+            dbInstance,
+            {
+                type: 'scrapeOptions',
+                data: {
+                    scrapeId,
+                    name: 'riderDetails',
+                    options: riderDetails
+                }
             }
-        })
+        );
     } else {
         await claimsAndConvictions(
             page,

@@ -83,14 +83,15 @@ const dbReducer = async(db, {type, data}) => {
             }
         case 'scrapeOptions':
             {
-                const scrapeOptions = await db
+                const dbScrapeOptions = await db
                     .collection('SCRAPE_OPTIONS')
                     .find({_id: data.scrapeId})
                     .project({_id: 0, scrapeOptions: 1})
-                    .toArray()[0];
+                    .toArray();
 
-                let scrapeOptionsFilled = scrapeOptions
-                    ? scrapeOptions
+                let scrapeOptionsFilled = dbScrapeOptions[0]
+                    && dbScrapeOptions[0].scrapeOptions
+                    ? dbScrapeOptions[0].scrapeOptions
                     : {};
 
                 scrapeOptionsFilled = {
