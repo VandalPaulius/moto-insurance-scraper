@@ -49,6 +49,7 @@ const dbReducer = async(db, {type, data}) => {
                             endedAt: data.endedAt
                         }
                     });
+
                 break;
             }
         case 'scrapeOptionsInputRange':

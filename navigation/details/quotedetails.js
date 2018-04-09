@@ -880,6 +880,7 @@ const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scra
             {
                 type: 'scrapeOptions',
                 data: {
+                    scrapeId,
                     name: 'quoteDetails',
                     options: quoteDetails
                 }
