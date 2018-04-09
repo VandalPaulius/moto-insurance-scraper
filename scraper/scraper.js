@@ -10,26 +10,33 @@ const scrape = async ({
     inputRange,
     headless = false,
     slowMo = 0,
-    loadTime = 2000
+    loadTime = 2000,
+    db
 }) => {
     console.log('scrape it');
 
     if (scrapeOptions) {
-        utils.database.saveToDb({
-            type: 'scrapeOptionsInputRange',
-            data: {
-                scrapeId,
-                inputRange
+        await utils.database.saveToDb(
+            db,
+            {
+                type: 'scrapeOptionsInputRange',
+                data: {
+                    scrapeId,
+                    inputRange
+                }
             }
-        })
+        )
     } else {
-        utils.database.saveToDb({
-            type: 'inputRange',
-            data: {
-                scrapeId,
-                inputRange
+        await utils.database.saveToDb(
+            db,
+            {
+                type: 'inputRange',
+                data: {
+                    scrapeId,
+                    inputRange
+                }
             }
-        }) // populate database with input ranges for one scrape
+        ) // populate database with input ranges for one scrape
     }
    
     const quotes = []
@@ -60,28 +67,30 @@ const scrape = async ({
     await navigation.details.quoteDetails(
         page,
         utils.database,
+        db,
         scrapeId,
         true,
-        false, // scrapeOptions,
+        scrapeOptions,
         inputRange
     );
     await utils.timing.loaded(page, loadTime);
     await navigation.details.riderDetails(
         page,
         utils.database,
+        db,
         scrapeId,
         true,
-        false, // scrapeOptions,
+        scrapeOptions,
         inputRange
     );
-    await utils.timing.loaded(page, loadTime);
-    await navigation.details.bikeDetails(
-        page,
-        utils.database,
-        scrapeId,
-        true,
-        scrapeOptions
-    );
+    // await utils.timing.loaded(page, loadTime);
+    // await navigation.details.bikeDetails(
+    //     page,
+    //     utils.database,
+    //     scrapeId,
+    //     true,
+    //     scrapeOptions
+    // );
     // await utils.timing.loaded(page, loadTime);
     // await navigation.details.coverDetails(
     //     page,
