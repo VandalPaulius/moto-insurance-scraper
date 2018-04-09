@@ -70,7 +70,7 @@ const scrape = async ({
         db,
         scrapeId,
         true,
-        scrapeOptions,
+        false, //scrapeOptions,
         inputRange
     );
     await utils.timing.loaded(page, loadTime);
@@ -80,25 +80,29 @@ const scrape = async ({
         db,
         scrapeId,
         true,
+        false, //scrapeOptions,
+        inputRange
+    );
+    await utils.timing.loaded(page, loadTime);
+    await navigation.details.bikeDetails(
+        page,
+        utils.database,
+        db,
+        scrapeId,
+        true,
+        false, //scrapeOptions,
+        inputRange
+    );
+    await utils.timing.loaded(page, loadTime);
+    await navigation.details.coverDetails(
+        page,
+        utils.database,
+        db,
+        scrapeId,
+        true,
         scrapeOptions,
         inputRange
     );
-    // await utils.timing.loaded(page, loadTime);
-    // await navigation.details.bikeDetails(
-    //     page,
-    //     utils.database,
-    //     scrapeId,
-    //     true,
-    //     scrapeOptions
-    // );
-    // await utils.timing.loaded(page, loadTime);
-    // await navigation.details.coverDetails(
-    //     page,
-    //     utils.database,
-    //     scrapeId,
-    //     true,
-    //     scrapeOptions
-    // );
 
     if (!scrapeOptions) {
         await utils.timing.loaded(page, loadTime);
@@ -110,7 +114,7 @@ const scrape = async ({
         await navigation.main.logout(page, true);
     }
 
-    await browser.close();
+    //await browser.close();
 
     if (scrapeOptions) {
         return true;

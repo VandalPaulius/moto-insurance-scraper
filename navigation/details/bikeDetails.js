@@ -221,9 +221,7 @@ const bikeSecurityScrapeOptions = async (page, db, scrapeId, inputRange) => {
         },
         secureMarkingsDropdown: '#ctl00_cphBody_qsVehicleSecurity_qSecureMarkings_cboAnswer',
         trackerDropdown: '#ctl00_cphBody_qsVehicleSecurity_qTracker_cboAnswer'
-    };
-
-    
+    };    
 
     const selectWeirdListItem = async (page, selector, immobilizer) => {
         const getIndex = async (page, selector, item) => {
@@ -273,11 +271,25 @@ const bikeSecurityScrapeOptions = async (page, db, scrapeId, inputRange) => {
         inputRange.tracker.value
     );
 
+
+    const getWeirdListOptions = async (page, selector) => {
+        return await page.evaluate((selector) => {
+            const optionList = document.querySelector(selector);
+            const optionKeys = Object.keys(optionList.children);
+
+            const options = optionKeys.map((key) => {
+                return optionList.children[key].innerText;
+            })
+    
+            return options;
+        }, selector);
+    }
+
     // options scrape
 
     const options = {
-        //alarmImmobilizer: await utils.helpers.getOptions(page, selectors.alarmImmobilizer),
-        //mechanicalSecurity: await utils.helpers.getOptions(page, selectors.mechanicalSecurity),
+        alarmImmobilizer: await getWeirdListOptions(page, selectors.alarmImmobilizer.list),
+        mechanicalSecurity: await getWeirdListOptions(page, selectors.mechanicalSecurity.list),
         secureMarkings: await utils.helpers.getOptions(page, selectors.secureMarkingsDropdown),
         tracker: await utils.helpers.getOptions(page, selectors.trackerDropdown)
     };
@@ -285,7 +297,7 @@ const bikeSecurityScrapeOptions = async (page, db, scrapeId, inputRange) => {
     return options;
 }
 
-const bikeDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, inputRange) => {
+const bikeDetails = async (page, db, dbInstance, scrapeId, continueToNext, scrapeOptions, inputRange) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
@@ -300,13 +312,19 @@ const bikeDetails = async (page, db, scrapeId, continueToNext, scrapeOptions, in
             )
         }
 
-        // db.saveToDb({
-        //     type: 'scrapeOptions',
-        //     data: {
-        //         name: 'bikeDetails',
-        //         options: bikeDetails
-        //     }
-        // });
+        console.log(bikeDetails);
+
+        await db.saveToDb(
+            dbInstance,
+            {
+                type: 'scrapeOptions',
+                data: {
+                    scrapeId,
+                    name: 'bikeDetails',
+                    options: bikeDetails
+                }
+            }
+        );
     } else {
         await bikeInfo(
             page,
