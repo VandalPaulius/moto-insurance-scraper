@@ -71,7 +71,8 @@ const scrape = async ({
         scrapeId,
         true,
         true, //false, //scrapeOptions,
-        inputRange
+        inputRange,
+        true // scrapeFewBikes :dev
     );
     await utils.timing.loaded(page, loadTime);
     await navigation.details.riderDetails(

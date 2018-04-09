@@ -563,7 +563,7 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
     return addressDetails;
 };
 
-const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
+const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFew = false, bikeScrapeCap = 2) => {
     const selectors = {
         knowRegNumber: {
             yes: '#ctl00_cphBody_qsVehicleSelection_qKnowRegNo_rbAnswer1',
@@ -607,8 +607,8 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
                 false
             ],
             engineCC: {
-                from: '123',//'1',
-                to: '125' //'3000'
+                from: '110',//'1',
+                to: '160' //'3000'
             }
         },
         bikes: []
@@ -669,7 +669,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
         });
     };
 
-    const getNumberList = (fromRaw, toRaw) => {
+    const getNumberList = (fromRaw, toRaw, step = 1) => {
         let from;
         let to;
         const list = [];
@@ -686,7 +686,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
             to = toRaw;
         }
 
-        for (let i = 0; i <= (to - from); i++) {
+        for (let i = 0; i <= (to - from); i = i + step) {
             list.push(`${from + i}`);
         }
 
@@ -706,7 +706,8 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
 
     const engineCCList = getNumberList(
         bikeDetailsOptions.engineSize.engineCC.from,
-        bikeDetailsOptions.engineSize.engineCC.to
+        bikeDetailsOptions.engineSize.engineCC.to,
+        20
     );
 
     const getBikes = async (
@@ -755,7 +756,11 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
     }
 
     bikeDetailsOptions.bikeMake = await getManufacturers(page, selectors.bikeMake);
-    for (let manufacturer of bikeDetailsOptions.bikeMake) {
+    
+
+    // for (let manufacturer of bikeDetailsOptions.bikeMake) {
+    for (let makerIndex = 0; makerIndex < bikeDetailsOptions.bikeMake.length; makerIndex++) {
+        let manufacturer = bikeDetailsOptions.bikeMake[makerIndex]
         let bikesTemp = [];
 
         await selectMake(page, selectors.bikeMake, manufacturer.text);
@@ -814,11 +819,14 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
             bikes: removeDuplicates(bikesTempFlattened)
         })
 
-        break; // dev
+        if (scrapeFew) {
+            if (makerIndex === bikeScrapeCap) {
+                break;
+            }
+        }
     }
-
-
-
+   
+    
     return bikeDetailsOptions;
 };
 
@@ -862,7 +870,7 @@ const coverDetailsScrapeOptions = async (page, db, scrapeId, inputRange) => {
     return coverDetailsOptions;
 };
 
-const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scrapeOptions, inputRange) => {
+const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scrapeOptions, inputRange, scrapeFewBikes) => {
     const selectors = {
         continueToNext: '#ctl00_btnNext'
     }
@@ -871,7 +879,13 @@ const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scra
         const quoteDetails = {
             personalDetails: await personalScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.personalDetails),
             addressDetails: await addressScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.addressDetails),
-            bikeDetails: await bikeDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.bikeDetails),
+            bikeDetails: await bikeDetailsScrapeOptions(
+                page,
+                db,
+                scrapeId,
+                inputRange.quoteDetails.bikeDetails,
+                scrapeFewBikes
+            ),
             coverDetails: await coverDetailsScrapeOptions(page, db, scrapeId, inputRange.quoteDetails.coverDetails)
         };
 
