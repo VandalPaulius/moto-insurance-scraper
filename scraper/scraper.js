@@ -8,7 +8,7 @@ const scrape = async ({
     debug = false,
     scrapeOptions = false,
     inputRange,
-    headless = false,
+    headless = false, // dev = false, prod = true
     slowMo = 0,
     loadTime = 2000,
     db
