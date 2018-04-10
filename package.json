@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js --inspect",
     "scrape-options": "node index.js --scrape-options --headless=true",
-    "db-to-json": "node index.js --db-to-json --get-last",
+    "db-to-json": "node index.js --db-to-json",
+    "db-to-json-last": "node index.js --db-to-json --get-last",
     "db-to-json-id": "node index.js --db-to-json --scrape-options=e8933d90-3c3f-11e8-b959-c7fc6e258c69",
     "generate-input-range": "node index.js --generate-input-range --headless=true",
     "scrape-quotes": "node index.js --scrape-quotes --headless=true",

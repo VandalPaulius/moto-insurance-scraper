@@ -31,4 +31,13 @@ OPTIONS_SCRAPE_RETRIES=5
 1. Install MongoDb
 2. Edit `[root]/mongo_db/start_mongodb.bat` file with desired database location
 3. Run `npm install`
-4. run `npm run scrape-options` to scrape option data to database
+4. Run `npm run scrape-options` to scrape option data to database
+
+### HOW TO: save options to json file ###
+
+1. Do 'HOW TO: scrape options` step
+2. **If you only need last options scrape data skip this step.**
+    1. Open database with `Mongobooster` or similar `MongoDb` viewing tool
+    2. Open `SCRAPE_OPTIONS` collection
+    3. Locate and copy desired record `_id`
+3. Run `npm run db-to-json --get-last` **or** `npm run db-to-json --scrape-options=YOUR_CHOSEN_RECORD_ID` to get scrape option data from database
