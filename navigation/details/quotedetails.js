@@ -580,44 +580,9 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         vehicleDropdown: '#ctl00_cphBody_qsVehicleSelection_qConfirmVehicleDontKnowReg_cboAnswer'
     }
 
-    // const bikeDetailsOptions = {
-    //     manufactureYear: {
-    //         from: '1900',
-    //         to: '2018'
-    //     },
-    //     engineSize: {
-    //         isElectric: [
-    //             true,
-    //             false
-    //         ],
-    //         engineCC: {
-    //             from: '1',
-    //             to: '3000'
-    //         }
-    //     }
-    // };
-
-    // const bikeDetailsOptions = { // dev
-    //     manufactureYear: {
-    //         from: '2014',//'1900',
-    //         to: '2018'
-    //     },
-    //     engineSize: {
-    //         isElectric: [
-    //             true,
-    //             false
-    //         ],
-    //         engineCC: {
-    //             from: '110',//'1',
-    //             to: '160' //'3000'
-    //         }
-    //     },
-    //     bikes: []
-    // };
-
-    const bikeDetailsOptions = {
+    let bikeDetailsOptions = {
         manufactureYear: {
-            from: '2010',
+            from: '1900',
             to: '2018'
         },
         engineSize: {
@@ -629,8 +594,21 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
                 from: '1',
                 to: '3000'
             }
-        }
+        },
+        bikes: []
     };
+
+    try {
+        const cwd = require('cwd');
+        const scrapeOptions = require(cwd('utils/presetscrapeoptions/quoteDetails_bikeDetails'));
+        bikeDetailsOptions = {
+            ...bikeDetailsOptions,
+            ...scrapeOptions
+        }
+    } catch (err) {}
+
+    console.log('bikeDetailsOptions', bikeDetailsOptions)
+
 
     const selectMake = async (page, selector, bikeMake) => {
         const options = await utils.helpers.getOptions(page, selector)
@@ -801,7 +779,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
     }
 
     bikeDetailsOptions.bikeMake = await getManufacturers(page, selectors.bikeMake);
-    
 
     for (let makerIndex = 0; makerIndex < bikeDetailsOptions.bikeMake.length; makerIndex++) {
         let manufacturer = bikeDetailsOptions.bikeMake[makerIndex]
@@ -857,13 +834,19 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         }
 
         const bikesTempFlattened = flatten(bikesTemp);
-        
+
         bikeDetailsOptions.bikes.push({
             brand: manufacturer,
             bikes: removeDuplicates(bikesTempFlattened)
         })
 
-        if (scrapeFew) {
+        if (bikeDetailsOptions.bikeMakerScrapeCap) {
+            if ((bikeDetailsOptions.bikeMakerScrapeCap - 1) === makerIndex) {
+                break
+            }
+        } else if (bikeDetailsOptions.bikeMakerScrapeCap === null) {
+            continue;
+        } else if (scrapeFew) {
             if (makerIndex === bikeScrapeCap) {
                 break;
             }
