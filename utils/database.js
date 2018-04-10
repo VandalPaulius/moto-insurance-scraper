@@ -28,7 +28,42 @@ const getDb = () => {
     return database;
 }
 
-const dbReducer = async(db, {type, data}) => {
+const getInputRange = async (
+    db, {
+        scrapeId,
+        getLast
+    }
+) => {
+    if (scrapeId) {
+        const scrapeOptionsFromDb = await db
+            .collection('SCRAPE_OPTIONS')
+            .find({ _id: scrapeId })
+            .project({ _id: 0, scrapeOptions: 1 })
+            .toArray();
+
+        const scrapeOptions = scrapeOptionsFromDb[0].scrapeOptions
+            ? scrapeOptionsFromDb[0].scrapeOptions
+            : {};
+
+        return scrapeOptions;
+    } else {
+        const scrapeOptionsFromDb = await db
+            .collection('SCRAPE_OPTIONS')
+            .find({})
+            .sort({ startedAt: -1 })
+            .limit(1)
+            .project({ _id: 0, scrapeOptions: 1 })
+            .toArray();
+
+        const scrapeOptions = scrapeOptionsFromDb[0].scrapeOptions
+            ? scrapeOptionsFromDb[0].scrapeOptions
+            : {};
+
+        return scrapeOptions;
+    }
+}
+
+const dbReducer = async (db, {type, data}) => {
     switch (type) {
         case 'scrapeOptionsSaveStartedDate':
             {
@@ -176,3 +211,4 @@ const saveToDb = async(db, {type, data}) => {
 module.exports.getDb = getDb;
 module.exports.saveToDb = saveToDb;
 module.exports.initDb = initDb;
+module.exports.getInputRange = getInputRange;
