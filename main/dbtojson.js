@@ -1,6 +1,8 @@
 const dbToJson = async (db) => {
     const cwd = require('cwd');
     const utils = require(cwd('utils'));
+    const fs = require('fs');
+    var util = require('util');
     const runArguments = {}
 
     process.argv.map((arg) => {
@@ -23,6 +25,15 @@ const dbToJson = async (db) => {
     );
 
     console.log('scrapeOptions: ', scrapeOptions);
+    try {
+        fs.writeFileSync(
+            cwd(`output/db-to-json/scrapeOptions_${new Date().getTime()}.json`),
+            JSON.stringify(scrapeOptions, null, 2)
+        );
+    } catch (err) {
+        console.error('Error: Cannot write scrapeOptions to file: ', err);
+    }
+    
     // save to files
     console.log('Finished.')
 }

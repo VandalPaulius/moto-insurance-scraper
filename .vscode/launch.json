@@ -23,7 +23,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Db To Json",
+            "name": "Db To Json --get-last",
             "program": "${workspaceFolder}\\index.js",
             "args": [
                 "--db-to-json",
@@ -33,7 +33,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Db To Json 2",
+            "name": "Db To Json scrapeId",
             "program": "${workspaceFolder}\\index.js",
             "args": [
                 "--db-to-json",
