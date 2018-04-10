@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js --inspect",
     "scrape-options": "node index.js --inspect -- --scrape-options --headless=true",
-    "db-to-json": "node index.js --inspect -- --db-to-json --headless=true",
+    "db-to-json": "node index.js --inspect -- --db-to-json --get-last",
+    "db-to-json-id": "node index.js --inspect -- --db-to-json --scrape-options=e8933d90-3c3f-11e8-b959-c7fc6e258c69",
     "generate-input-range": "node index.js --inspect -- --generate-input-range --headless=true",
     "scrape-quotes": "node index.js --inspect -- --scrape-quotes --headless=true",
     "test": "echo \"Error: no test specified\" && exit 1"
