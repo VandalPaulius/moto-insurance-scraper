@@ -1,4 +1,4 @@
-const dbToJson = (db) => {
+const dbToJson = (db, healess = false) => {
 
 }
 

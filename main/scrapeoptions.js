@@ -1,4 +1,4 @@
-const scrapeOptions = async (db) => {
+const scrapeOptions = async (db, healess = true) => {
     const cwd = require('cwd');
     const scraper = require(cwd('scraper'));
     const utils = require(cwd('utils'));
@@ -68,7 +68,7 @@ const scrapeOptions = async (db) => {
             }
 
             browser = await puppeteer.launch({
-                headless: false, // dev = false, prod = true,
+                headless: healess, // dev = false, prod = true,
                 slowMo: slowMo // for fully operational mode
             });
 
@@ -98,7 +98,7 @@ const scrapeOptions = async (db) => {
                 shouldBreak = true;
             }
 
-            console.error(`Failed to scrape options! ${message}`);
+            console.error(`Failed to scrape options! ${message}     Error: ${error}`);
             if (shouldBreak) {
                 break;
             }

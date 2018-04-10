@@ -52,13 +52,17 @@ const scrape = async ({
     await navigation.main.homeToLogin(page);
 
     await utils.timing.loaded(page, loadTime);
+    console.log(`${scrapeId}: starting 'login'`);
     await navigation.main.login(page);
     await utils.timing.show(page, loadTime);
+    console.log(`${scrapeId}: finished 'login'`);
 
     await navigation.dashboard.removeSuperfluousQuotes(page);
 
     await navigation.dashboard.newQuote(page);
 
+    await utils.timing.loaded(page, loadTime);
+    console.log(`${scrapeId}: starting 'quoteDetails'`);
     await navigation.details.quoteDetails(
         page,
         utils.database,
@@ -69,7 +73,9 @@ const scrape = async ({
         inputRange,
         true // scrapeFewBikes :dev @ scrapeOptions
     );
+    console.log(`${scrapeId}: finished 'quoteDetails'`);
     await utils.timing.loaded(page, loadTime);
+    console.log(`${scrapeId}: starting 'riderDetails'`);
     await navigation.details.riderDetails(
         page,
         utils.database,
@@ -79,7 +85,9 @@ const scrape = async ({
         scrapeOptions,
         inputRange
     );
+    console.log(`${scrapeId}: finished 'riderDetails'`);
     await utils.timing.loaded(page, loadTime);
+    console.log(`${scrapeId}: starting 'bikeDetails'`);
     await navigation.details.bikeDetails(
         page,
         utils.database,
@@ -89,7 +97,9 @@ const scrape = async ({
         scrapeOptions,
         inputRange
     );
+    console.log(`${scrapeId}: finished 'bikeDetails'`);
     await utils.timing.loaded(page, loadTime);
+    console.log(`${scrapeId}: starting 'coverDetails'`);
     await navigation.details.coverDetails(
         page,
         utils.database,
@@ -99,9 +109,10 @@ const scrape = async ({
         scrapeOptions,
         inputRange
     );
-
+    console.log(`${scrapeId}: finished 'coverDetails'`);
     if (!scrapeOptions) {
         await utils.timing.loaded(page, loadTime);
+        console.log(`${scrapeId}: starting 'getQuotes'`);
         const quotes = await navigation.quotes.getQuotes(
             page,
             utils.database,
