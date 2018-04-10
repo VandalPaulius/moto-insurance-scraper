@@ -597,9 +597,27 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
     //     }
     // };
 
-    const bikeDetailsOptions = { // dev
+    // const bikeDetailsOptions = { // dev
+    //     manufactureYear: {
+    //         from: '2014',//'1900',
+    //         to: '2018'
+    //     },
+    //     engineSize: {
+    //         isElectric: [
+    //             true,
+    //             false
+    //         ],
+    //         engineCC: {
+    //             from: '110',//'1',
+    //             to: '160' //'3000'
+    //         }
+    //     },
+    //     bikes: []
+    // };
+
+    const bikeDetailsOptions = {
         manufactureYear: {
-            from: '2014',//'1900',
+            from: '2010',
             to: '2018'
         },
         engineSize: {
@@ -608,11 +626,10 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
                 false
             ],
             engineCC: {
-                from: '110',//'1',
-                to: '160' //'3000'
+                from: '1',
+                to: '3000'
             }
-        },
-        bikes: []
+        }
     };
 
     const selectMake = async (page, selector, bikeMake) => {
@@ -731,7 +748,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
                     return;
                 }
             } catch (error) {
-                await page.waitFor(30); // wait for loading modal disappear
+                await page.waitFor(30); // wait for if loading div is not available
                 return;
             }
         } while (true);

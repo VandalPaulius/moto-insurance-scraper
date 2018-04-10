@@ -1,4 +1,4 @@
-const scrapeQuotes = (db) => {
+const scrapeQuotes = (db, healess = false) => {
 
 }
 
