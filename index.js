@@ -37,11 +37,11 @@ const distributor = async () => {
 
     if (launchArguments.scrapeOptions) {
         await main.scrapeOptions(db, launchArguments.headless);
-    } else if (launchArguments.scrapeOptions) {
-        await main.dbToJson(db, launchArguments.headless);
-    } else if (launchArguments.scrapeOptions) {
+    } else if (launchArguments.dbToJson) {
+        await main.dbToJson(db);
+    } else if (launchArguments.generateInputRange) {
         await main.generateInputRange(db, launchArguments.headless);
-    } else if (launchArguments.scrapeOptions) {
+    } else if (launchArguments.scrapeQuotes) {
         await main.scrapeOptions(db, launchArguments.headless);
     }
 

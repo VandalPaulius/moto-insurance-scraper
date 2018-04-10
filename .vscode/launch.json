@@ -19,6 +19,26 @@
                 "--scrape-options",
                 "--headless=false"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Db To Json --get-last",
+            "program": "${workspaceFolder}\\index.js",
+            "args": [
+                "--db-to-json",
+                "--get-last"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Db To Json scrapeId",
+            "program": "${workspaceFolder}\\index.js",
+            "args": [
+                "--db-to-json",
+                "--scrape-options=e8933d90-3c3f-11e8-b959-c7fc6e258c69"
+            ]
         }
     ]
 }   
