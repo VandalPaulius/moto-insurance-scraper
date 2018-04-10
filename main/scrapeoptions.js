@@ -1,4 +1,4 @@
-const scrapeOptions = async (db, healess = true) => {
+const scrapeOptions = async (db, headless = true) => {
     const cwd = require('cwd');
     const scraper = require(cwd('scraper'));
     const utils = require(cwd('utils'));
@@ -68,7 +68,7 @@ const scrapeOptions = async (db, healess = true) => {
             }
 
             browser = await puppeteer.launch({
-                headless: healess, // dev = false, prod = true,
+                headless: headless, // dev = false, prod = true,
                 slowMo: slowMo // for fully operational mode
             });
 

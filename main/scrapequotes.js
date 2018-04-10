@@ -1,4 +1,4 @@
-const scrapeQuotes = (db, healess = false) => {
+const scrapeQuotes = (db, headless = false) => {
 
 }
 

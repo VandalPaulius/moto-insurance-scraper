@@ -1,4 +1,4 @@
-const generateInputRange = (db, healess = false) => {
+const generateInputRange = (db, headless = false) => {
 
 }
 
