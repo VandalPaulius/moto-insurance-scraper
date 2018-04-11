@@ -420,7 +420,7 @@ const personalScrapeOptions = async (page, db, scrapeId, inputRange) => {
                 to: '2018'
             }
         },
-        employmentDropdown: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.maritalStatus)),
+        employmentDropdown: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.employmentDropdown)),
         partTimeEmploymentLess16Hrs: [
             true,
             false
@@ -606,9 +606,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
             ...scrapeOptions
         }
     } catch (err) {}
-
-    console.log('bikeDetailsOptions', bikeDetailsOptions)
-
 
     const selectMake = async (page, selector, bikeMake) => {
         const options = await utils.helpers.getOptions(page, selector)

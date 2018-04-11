@@ -40,9 +40,9 @@ const distributor = async () => {
     } else if (launchArguments.dbToJson) {
         await main.dbToJson(db);
     } else if (launchArguments.generateInputRange) {
-        await main.generateInputRange(db, launchArguments.headless);
+        await main.generateInputRange(db);
     } else if (launchArguments.scrapeQuotes) {
-        await main.scrapeOptions(db, launchArguments.headless);
+        await main.scrapeQuotes(db, launchArguments.headless);
     }
 
     console.log('Exiting gracefully.');

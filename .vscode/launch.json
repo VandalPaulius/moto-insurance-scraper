@@ -39,6 +39,15 @@
                 "--db-to-json",
                 "--scrape-options=e8933d90-3c3f-11e8-b959-c7fc6e258c69"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Generate Input Range",
+            "program": "${workspaceFolder}\\index.js",
+            "args": [
+                "--generate-input-range"
+            ]
         }
     ]
 }   
