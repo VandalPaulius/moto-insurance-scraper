@@ -768,13 +768,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         return cleanList;
     }
 
-    const removeDuplicates = (listWithDuplicates) => {
-        const bikesTempFlatStrings = listWithDuplicates.map(bike => JSON.stringify(bike));
-        const bikesNoDuplicatesStringsSet = new Set(bikesTempFlatStrings);
-        const bikesNoDuplicatesStrings = Array.from(bikesNoDuplicatesStringsSet);
-        return bikesNoDuplicatesStrings.map(bikeString => JSON.parse(bikeString))
-    }
-
     bikeDetailsOptions.bikeMake = await getManufacturers(page, selectors.bikeMake);
 
     for (let makerIndex = 0; makerIndex < bikeDetailsOptions.bikeMake.length; makerIndex++) {
@@ -834,7 +827,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
 
         bikeDetailsOptions.bikes.push({
             brand: manufacturer,
-            bikes: removeDuplicates(bikesTempFlattened)
+            bikes: utils.helpers.removeArrayDuplicates(bikesTempFlattened)
         })
 
         if (bikeDetailsOptions.bikeMakerScrapeCap) {

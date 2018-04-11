@@ -75,9 +75,22 @@ const getNumberList = (fromRaw, toRaw, step = 1) => {
     return list;
 }
 
+const removeArrayDuplicates = (listWithDuplicates) => {
+    if (!(listWithDuplicates instanceof Array)) {
+        return [];
+    }
+
+    const listWithDuplicatesStrings = listWithDuplicates
+        .map(item => JSON.stringify(item));
+    const listnODuplicatesStrings = Array
+        .from(new Set(listWithDuplicatesStrings));
+    return listnODuplicatesStrings.map(itemString => JSON.parse(itemString))
+}
+
 module.exports.checkbox = checkbox;
 module.exports.typeClean = typeClean;
 module.exports.getOptions = getOptions;
 module.exports.selectYesNo = selectYesNo;
 module.exports.removePleaseSelect = removePleaseSelect;
 module.exports.getNumberList = getNumberList;
+module.exports.removeArrayDuplicates = removeArrayDuplicates;
