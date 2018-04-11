@@ -32,6 +32,7 @@
     "cwd": "^0.10.0",
     "dotenv": "^5.0.1",
     "inspect-process": "^0.5.0",
+    "js-combinatorics": "^0.5.3",
     "mongodb": "^3.0.5",
     "mongoose": "^5.0.13",
     "puppeteer": "^1.2.0",

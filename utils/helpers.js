@@ -51,8 +51,33 @@ const selectYesNo = async (page, selectors, yes) => {
     }
 }
 
+const getNumberList = (fromRaw, toRaw, step = 1) => {
+    let from;
+    let to;
+    const list = [];
+
+    if (typeof fromRaw === 'string') {
+        from = parseInt(fromRaw);
+    } else {
+        from = fromRaw;
+    }
+
+    if (typeof toRaw === 'string') {
+        to = parseInt(toRaw);
+    } else {
+        to = toRaw;
+    }
+
+    for (let i = 0; i <= (to - from); i = i + step) {
+        list.push(`${from + i}`);
+    }
+
+    return list;
+}
+
 module.exports.checkbox = checkbox;
 module.exports.typeClean = typeClean;
 module.exports.getOptions = getOptions;
 module.exports.selectYesNo = selectYesNo;
 module.exports.removePleaseSelect = removePleaseSelect;
+module.exports.getNumberList = getNumberList;
