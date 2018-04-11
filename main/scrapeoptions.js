@@ -37,14 +37,14 @@ const scrapeOptions = async (db, headless = true) => {
                 console.log('DATABASE: ', utils.database.getDb());
             }
     
-            const endedAt = new Date;
+            const finishedAt = new Date;
             await utils.database.saveToDb(
                 db,
                     {
                     type: 'scrapeOptionsSaveEndedDate',
                     data: {
                         scrapeId,
-                        endedAt
+                        finishedAt
                     }
                 }
             )

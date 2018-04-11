@@ -50,8 +50,23 @@ const generateRanges = (givenOptions) => {
     return options;
 }
 
-const saveInputRangeToDb = async ({ batchId, db, inputRange }) => {
-    
+const saveInputRangeToDb = async ({
+    batchId,
+    db,
+    inputRange,
+    scrapeId
+}) => {
+    await utils.database.saveToDb(
+        db,
+        {
+            type: 'generateInputSaveInputRange',
+            data: {
+                batchId,
+                inputRange,
+                scrapeId
+            }
+        }
+    );
 }
 
 const generateCombinations = ({
@@ -87,14 +102,17 @@ const generateCombinations = ({
                 promiseQueue
             });
         } else {
-            const inputRange = JSON.parse(JSON.stringify(current)); // object deep copy
+            const inputRangeRaw = JSON.parse(JSON.stringify(current)); // object deep copy
             
-            // save to db
+            const inputRange = inputRangeRaw; // map to object
+
+            const scrapeId = uuidv1();
             // add to Promise queue to prevent premature process close
             promiseQueue.add(() => saveInputRangeToDb({
                 batchId,
                 db,
-                inputRange
+                inputRange,
+                scrapeId
             }));
 
             resultCount.push('sucess');
@@ -163,7 +181,7 @@ const generateInputRange = async (db) => {
 
     let scrapeOptions;
     let error;
-    let inputRangeSize;
+    let batchSize;
     try {
         console.log('Getting data from [root]/input/inputRange.json.')
         scrapeOptions = require(cwd('input/inputRange.json'));        
@@ -187,14 +205,14 @@ const generateInputRange = async (db) => {
             }
         );
 
-        inputRangeSize = await generate({
+        batchSize = await generate({
             db,
             scrapeOptions,
             batchId,
             promiseQueue
         });
 
-        if (!inputRangeSize) {
+        if (!batchSize) {
             console.error(`Finished unsuccessfully.`)
             return;
         }
@@ -210,7 +228,7 @@ const generateInputRange = async (db) => {
             data: {
                 batchId,
                 finishedAt: new Date(),
-                inputRangeSize
+                batchSize
             }
         }
     );
