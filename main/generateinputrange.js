@@ -84,15 +84,15 @@ const generate = async ({
     const flatScrapeOptionsObj = flatten(scrapeOptionsGenerated, '');
 
     const combinations = getCombinations(flatScrapeOptionsObj, 0, [], {});
-    // combinations quality control [start]
-    const combinationsNoDuplicates = utils.helpers
-        .removeArrayDuplicates(combinations);
-    const combinationsSizeControl = combinationsNoDuplicates.filter((option) => {
-        if (Object.keys(option).length === 76) {
-            return option
-        }
-    })
-    // combinations quality control [end]
+    // // combinations quality control [start]
+    // const combinationsNoDuplicates = utils.helpers
+    //     .removeArrayDuplicates(combinations);
+    // const combinationsSizeControl = combinationsNoDuplicates.filter((option) => {
+    //     if (Object.keys(option).length === Object.keys(flatScrapeOptionsObj).length) {
+    //         return option
+    //     }
+    // })
+    // // combinations quality control [end]
     
     return combinations;
 }
