@@ -34,6 +34,7 @@
     "inspect-process": "^0.5.0",
     "mongodb": "^3.0.5",
     "mongoose": "^5.0.13",
+    "promise-queue": "^2.2.5",
     "puppeteer": "^1.2.0",
     "uuid": "^3.2.1"
   }

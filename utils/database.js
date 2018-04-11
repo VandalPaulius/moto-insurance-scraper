@@ -16,7 +16,7 @@ const initDb = async() => {
 
         db = client.db(process.env.MONGODB_NAME);
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
 
     await db.createCollection('SCRAPE_OPTIONS');

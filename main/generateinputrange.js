@@ -1,6 +1,7 @@
 const uuidv1 = require('uuid/v1');
 const cwd = require('cwd');
 const utils = require(cwd('utils'));
+const PromiseQueue = require('promise-queue');
 
 const flatten = (scrapeOptions, name) => {
     let flatOptions = {};
@@ -49,7 +50,20 @@ const generateRanges = (givenOptions) => {
     return options;
 }
 
-const getCombinations = (options, optionIndex, results, current) => { // credits to Dmytro Shevchenko @ StackOverflow
+const saveInputRangeToDb = async ({ batchId, db, inputRange }) => {
+    
+}
+
+const generateCombinations = ({
+    options,
+    optionIndex,
+    resultCount,
+    current,
+    results,
+    batchId,
+    db,
+    promiseQueue
+}) => { // credits to Dmytro Shevchenko @ StackOverflow
     const allKeys = Object.keys(options);
     const optionKey = allKeys[optionIndex];
     let vals = options[optionKey];
@@ -62,19 +76,50 @@ const getCombinations = (options, optionIndex, results, current) => { // credits
         current[optionKey] = vals[i];
 
         if (optionIndex + 1 < allKeys.length) {
-            getCombinations(options, optionIndex + 1, results, current);
+            generateCombinations({
+                options,
+                optionIndex: optionIndex + 1,
+                resultCount,
+                current,
+                results,
+                batchId,
+                db,
+                promiseQueue
+            });
         } else {
-            const res = JSON.parse(JSON.stringify(current)); // object deep copy
-            results.push(res);
+            const inputRange = JSON.parse(JSON.stringify(current)); // object deep copy
+            
+            // save to db
+            // add to Promise queue to prevent premature process close
+            promiseQueue.add(() => saveInputRangeToDb({
+                batchId,
+                db,
+                inputRange
+            }));
+
+            resultCount.push('sucess');
+
+            if (results) {
+                results.push(inputRange);
+            }
         }
     }
 
-    return results;
+    if (results) {
+        return {
+            results,
+            resultCount
+        }
+    } else {
+        return resultCount;
+    }
 }
 
 const generate = async ({
     db,
-    scrapeOptions
+    scrapeOptions,
+    batchId,
+    promiseQueue
 }) => {
 
     let outputOptions = [];
@@ -82,26 +127,43 @@ const generate = async ({
 
     const scrapeOptionsGenerated = generateRanges(scrapeOptions);
     const flatScrapeOptionsObj = flatten(scrapeOptionsGenerated, '');
+    let resultCountArr = [];
 
-    const combinations = getCombinations(flatScrapeOptionsObj, 0, [], {});
-    // // combinations quality control [start]
-    // const combinationsNoDuplicates = utils.helpers
-    //     .removeArrayDuplicates(combinations);
-    // const combinationsSizeControl = combinationsNoDuplicates.filter((option) => {
-    //     if (Object.keys(option).length === Object.keys(flatScrapeOptionsObj).length) {
-    //         return option
-    //     }
-    // })
-    // // combinations quality control [end]
-    
-    return combinations;
+    try {
+        await generateCombinations({
+            options: flatScrapeOptionsObj,
+            optionIndex: 0,
+            results: null,
+            resultCount: resultCountArr,
+            current: {},
+            batchId,
+            db,
+            promiseQueue // add
+        });
+        // // combinations quality control [start]
+        // const combinationsNoDuplicates = utils.helpers
+        //     .removeArrayDuplicates(combinations);
+        // const combinationsSizeControl = combinationsNoDuplicates.filter((option) => {
+        //     if (Object.keys(option).length === Object.keys(flatScrapeOptionsObj).length) {
+        //         return option
+        //     }
+        // })
+        // // combinations quality control [end]
+    } catch (err) {
+        return false;
+    }
+
+    return resultCountArr.length;
 }
 
 const generateInputRange = async (db) => {
     const cwd = require('cwd');
+    const promiseQueue = new PromiseQueue(Infinity, Infinity);
+    const batchId = uuidv1();
 
     let scrapeOptions;
     let error;
+    let inputRangeSize;
     try {
         console.log('Getting data from [root]/input/inputRange.json.')
         scrapeOptions = require(cwd('input/inputRange.json'));        
@@ -112,11 +174,48 @@ const generateInputRange = async (db) => {
     if (!scrapeOptions || error) {
         console.error(`Cannot get data.${error ? ` Error: ${error}`: ''}`)
     } else {
-        await generate({
+        
+
+        await utils.database.saveToDb(
             db,
-            scrapeOptions
+            {
+                type: 'generateInputRangeStarted',
+                data: {
+                    batchId,
+                    startedAt: new Date()
+                }
+            }
+        );
+
+        inputRangeSize = await generate({
+            db,
+            scrapeOptions,
+            batchId,
+            promiseQueue
         });
+
+        if (!inputRangeSize) {
+            console.error(`Finished unsuccessfully.`)
+            return;
+        }
     }
+
+    do {} while ( promiseQueue.getPendingLength() > 1
+        && promiseQueue.getQueueLength() > 1 );
+
+    await utils.database.saveToDb(
+        db,
+        {
+            type: 'generateInputRangeFinished',
+            data: {
+                batchId,
+                finishedAt: new Date(),
+                inputRangeSize
+            }
+        }
+    );
+
+    console.log('Finished successfully');
 }
 
 module.exports = generateInputRange;
