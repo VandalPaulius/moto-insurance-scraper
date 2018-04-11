@@ -69,6 +69,246 @@ const saveInputRangeToDb = async ({
     );
 }
 
+// const mapToObject = (inputRangeRaw, ) => {
+//     const toObj = (objectifiedOptions, key) => {
+//         if (!objectifiedOptions[key]) {
+//             objectifiedOptions = {
+//                 ...objectifiedOptions,
+//                 [key]: toObj(objectifiedOptions, ) // not done
+//             };
+//         }
+
+//     }
+
+//     let objectifiedOptions = {};
+
+//     return Object.keys(inputRangeRaw).map((keyRaw) => {
+//         const keyParts = keyRaw.split('_').filter((key, index) => {
+//             if (index) {
+//                 return key;
+//             }
+//         });
+
+//         keyParts.map((key, index) => toObj)
+
+//         const stuff = '';
+//     });
+// }
+
+
+// const mapToObject = (inputRangeRaw, ) => {
+
+
+//     let objectifiedOptions.asdasd = {};
+//     let tempObj = {}
+//     objectifiedOptions['asdasd']
+
+//     return Object.keys(inputRangeRaw).map((keyRaw) => {
+//         const keyParts = keyRaw.split('_').filter((key, index) => {
+//             if (index) {
+//                 return key;
+//             }
+//         });
+
+//         for (let i = 0; i < keyParts.length; i++) {
+//             tempObj = objectifiedOptions[keyParts[i]] // =  toObj(keyParts, startIndex, objectifiedOptions)
+//         }
+
+//         //keyParts.map((key, index) => toObj)
+
+//         const stuff = '';
+//     });
+// }
+
+
+
+
+
+// const mapToObject = (inputRangeRaw) => {
+//     const toObj = ({
+//         keyRaw,
+//         keyParts,
+//         startIndex,
+//         objectifiedOptions
+//     }) => {
+//         // if (startIndex >= keyParts.length) {
+//         //     return objectifiedOptions = inputRangeRaw[keyRaw];
+//         // } else {
+//         //     startIndex = startIndex + 1;
+
+//         //     return toObj({
+//         //         keyRaw,
+//         //         keyParts,
+//         //         startIndex,
+//         //         objectifiedOptions: objectifiedOptions[keyParts[startIndex]]
+//         //     })
+//         // }
+//         return 'adasd'
+//     }
+
+//     let objectifiedOptions = {};
+//     let startIndex = 0;
+
+//     const stuff = Object.keys(inputRangeRaw).map((keyRaw) => {
+//         const keyParts = keyRaw.split('_').filter((key, index) => {
+//             if (index) {
+//                 return key;
+//             }
+//         });
+
+//         return toObj({
+//             keyRaw,
+//             keyParts,
+//             startIndex,
+//             objectifiedOptions
+//         })
+
+//     });
+
+//     console.log('stuff', stuff)
+
+//     //return stuff;
+// }
+
+function assign(obj, keyPath, value) {
+    const lastKeyIndex = keyPath.length-1;
+    for (var i = 0; i < lastKeyIndex; ++ i) {
+      const key = keyPath[i];
+      if (!(key in obj))
+        obj[key] = {}
+      obj = obj[key];
+    }
+    obj[keyPath[lastKeyIndex]] = value;
+ }
+
+ function isObject(item) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+  }
+
+ function mergeDeep(target, ...sources) {
+    if (!sources.length) return target;
+    const source = sources.shift();
+  
+    if (isObject(target) && isObject(source)) {
+      for (const key in source) {
+        if (isObject(source[key])) {
+          if (!target[key]) Object.assign(target, { [key]: {} });
+          mergeDeep(target[key], source[key]);
+        } else {
+          Object.assign(target, { [key]: source[key] });
+        }
+      }
+    }
+  
+    return mergeDeep(target, ...sources);
+  }
+
+// const mapToObject = (inputRangeRaw) => {
+
+
+//     let objectifiedOptions = {};
+//     const objectArr = []
+//     let merged = {};
+    
+
+//     Object.keys(inputRangeRaw).map((keyRaw) => {
+//         const keyParts = keyRaw.split('_').filter((key, index) => {
+//             if (index) {
+//                 return key;
+//             }
+//         });
+
+//         const tempObj = {};
+
+//         assign(tempObj, keyParts, inputRangeRaw[keyRaw]) // kinda works
+
+//         merged = mergeDeep(objectifiedOptions, assign(tempObj, keyParts, inputRangeRaw[keyRaw]))
+        
+
+//         //objectArr.push(tempObj)
+
+//         /*let tempObj = {
+//             [keyParts[0]]: {}
+//         }*/
+
+//         /*console.log()
+//         for (let i = 1; i < keyParts.length; i++) {
+//             if (i + 1 === keyParts.length) {
+//                 tempObj[keyParts[i-1]] = {
+//                     [keyParts[i]]: inputRangeRaw[keyRaw]
+//                 }
+//             } else {
+//                 tempObj = getNestedObject(tempObj, [keyParts[i-1]])
+//                 tempObj[keyParts[i-1]] = {
+//                     [keyParts[i]]: {}
+//                 }
+                
+//             }
+//             //tempObj[keyParts[i]] = {} // =  toObj(keyParts, startIndex, objectifiedOptions)
+//         }*/
+
+//         //keyParts.map((key, index) => toObj)
+
+//         const stuff = '';
+//     });
+
+//     console.log('objectArr: ', objectArr)
+
+    
+// }
+
+
+
+const mapToObject = (inputRangeRaw) => {
+
+
+        let objectifiedOptions = {};
+        const objectArr = []
+        let merged = {};
+
+        const toObj = ({
+            index,
+            keys,
+            keyRaw
+        }) => {
+            if (index + 1 === keys.length) {
+                return {
+                    [keys[index]]: inputRangeRaw[keyRaw]
+                }
+            }
+            return {
+                [keys[index]]: toObj({
+                    index: index + 1,
+                    keys,
+                    keyRaw
+                })
+            }
+        }
+        
+    
+        Object.keys(inputRangeRaw).map((keyRaw) => {
+            const keyParts = keyRaw.split('_').filter((key, index) => {
+                if (index) {
+                    return key;
+                }
+            });
+    
+            const tempObj = {};
+            objectArr.push(toObj({
+                index: 0,
+                keys: keyParts,
+                keyRaw
+            }))
+    
+
+    
+            const stuff = '';
+        });
+    
+        console.log('objectArr: ', objectArr)
+    }
+
+
 const generateCombinations = ({
     options,
     optionIndex,
@@ -105,6 +345,7 @@ const generateCombinations = ({
             const inputRangeRaw = JSON.parse(JSON.stringify(current)); // object deep copy
             
             const inputRange = inputRangeRaw; // map to object
+            mapToObject(inputRangeRaw); // dev
 
             const scrapeId = uuidv1();
             // add to Promise queue to prevent premature process close
