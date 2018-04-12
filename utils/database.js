@@ -16,10 +16,12 @@ const initDb = async() => {
 
         db = client.db(process.env.MONGODB_NAME);
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
 
     await db.createCollection('SCRAPE_OPTIONS');
+    await db.createCollection('BATCHES');
+    await db.createCollection('SCRAPES');
 
     return db;
 }
@@ -81,7 +83,7 @@ const dbReducer = async (db, {type, data}) => {
                         _id: data.scrapeId
                     }, {
                         $set: {
-                            endedAt: data.endedAt
+                            finishedAt: data.finishedAt
                         }
                     });
 
@@ -146,7 +148,45 @@ const dbReducer = async (db, {type, data}) => {
 
                 break;
             }
-        case 'quotes':
+            case 'generateInputRangeStarted':
+            {
+                await db
+                    .collection('BATCHES')
+                    .save({
+                        _id: data.batchId,
+                        startedAt: data.startedAt
+                    });
+
+                break;
+            }
+            case 'generateInputRangeFinished':
+            {
+                await db
+                    .collection('BATCHES')
+                    .update({
+                        _id: data.batchId
+                    }, {
+                        $set: {
+                            finishedAt: data.finishedAt,
+                            batchSize: data.batchSize
+                        }
+                    });
+
+                break;
+            }
+            case 'generateInputSaveInputRange':
+            {
+                await db
+                    .collection('SCRAPES')
+                    .save({
+                        _id: data.scrapeId,
+                        batchId: data.batchId,
+                        inputRange: data.inputRange
+                    });
+
+                break;
+            }
+            case 'quotes':
             {
                 return {
                     ...db,

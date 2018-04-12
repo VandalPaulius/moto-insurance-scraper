@@ -420,7 +420,7 @@ const personalScrapeOptions = async (page, db, scrapeId, inputRange) => {
                 to: '2018'
             }
         },
-        employmentDropdown: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.maritalStatus)),
+        employmentDropdown: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.employmentDropdown)),
         partTimeEmploymentLess16Hrs: [
             true,
             false
@@ -595,7 +595,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
                 to: '3000'
             }
         },
-        bikes: []
+        bike: []
     };
 
     try {
@@ -606,9 +606,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
             ...scrapeOptions
         }
     } catch (err) {}
-
-    console.log('bikeDetailsOptions', bikeDetailsOptions)
-
 
     const selectMake = async (page, selector, bikeMake) => {
         const options = await utils.helpers.getOptions(page, selector)
@@ -771,13 +768,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
         return cleanList;
     }
 
-    const removeDuplicates = (listWithDuplicates) => {
-        const bikesTempFlatStrings = listWithDuplicates.map(bike => JSON.stringify(bike));
-        const bikesNoDuplicatesStringsSet = new Set(bikesTempFlatStrings);
-        const bikesNoDuplicatesStrings = Array.from(bikesNoDuplicatesStringsSet);
-        return bikesNoDuplicatesStrings.map(bikeString => JSON.parse(bikeString))
-    }
-
     bikeDetailsOptions.bikeMake = await getManufacturers(page, selectors.bikeMake);
 
     for (let makerIndex = 0; makerIndex < bikeDetailsOptions.bikeMake.length; makerIndex++) {
@@ -835,10 +825,8 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
 
         const bikesTempFlattened = flatten(bikesTemp);
 
-        bikeDetailsOptions.bikes.push({
-            brand: manufacturer,
-            bikes: removeDuplicates(bikesTempFlattened)
-        })
+        utils.helpers.removeArrayDuplicates(bikesTempFlattened)
+            .map(bike => bikeDetailsOptions.bike.push(bike));
 
         if (bikeDetailsOptions.bikeMakerScrapeCap) {
             if ((bikeDetailsOptions.bikeMakerScrapeCap - 1) === makerIndex) {
