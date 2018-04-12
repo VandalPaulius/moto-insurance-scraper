@@ -11,6 +11,8 @@
     "db-to-json-id": "node index.js --db-to-json --scrape-options=e8933d90-3c3f-11e8-b959-c7fc6e258c69",
     "generate-input-range": "node index.js --generate-input-range",
     "scrape-quotes": "node index.js --scrape-quotes --headless=true",
+    "scrape-quotes-id": "node index.js --scrape-quotes --headless=true --batch-id=42571170-3dfe-11e8-b7c8-f3d0eaa9ee32",
+    "scrape-quotes-last": "node index.js --scrape-quotes --headless=true --get-last",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

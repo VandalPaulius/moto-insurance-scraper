@@ -48,6 +48,28 @@
             "args": [
                 "--generate-input-range"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Scrape Quotes Last",
+            "program": "${workspaceFolder}\\index.js",
+            "args": [
+                "--scrape-quotes",
+                "--headless=false",
+                "--get-last"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Scrape Quotes Id",
+            "program": "${workspaceFolder}\\index.js",
+            "args": [
+                "--scrape-quotes",
+                "--headless=false",
+                "--batch-id=42571170-3dfe-11e8-b7c8-f3d0eaa9ee32"
+            ]
         }
     ]
 }   

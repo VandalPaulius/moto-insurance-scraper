@@ -65,6 +65,40 @@ const getInputRange = async (
     }
 }
 
+const getScrapeIds = async (
+    db,
+    {
+        batchId,
+        getLast
+    }
+) => {
+    if (batchId) {
+        const scrapeIds = await db
+            .collection('SCRAPES')
+            .find({ batchId })
+            .project({ _id: 1 })
+            .toArray();
+
+        return scrapeIds.map(container => container._id);
+    } else {
+        const lastBatchId = await db
+            .collection('BATCHES')
+            .find({})
+            .sort({ startedAt: -1 })
+            .limit(1)
+            .project({ _id: 1 })
+            .toArray();
+
+        const scrapeIds = await db
+            .collection('SCRAPES')
+            .find({ batchId: lastBatchId[0]._id })
+            .project({ _id: 1 })
+            .toArray();
+
+        return scrapeIds.map(container => container._id);
+    }
+}
+
 const dbReducer = async (db, {type, data}) => {
     switch (type) {
         case 'scrapeOptionsSaveStartedDate':
@@ -196,6 +230,21 @@ const dbReducer = async (db, {type, data}) => {
                     }
                 };
             }
+        case 'SCRAPE_QUOTES__GET_LAST__BATCH_ID':
+            {
+                await db
+                    .collection('BATCHES')
+                    .update({
+                        _id: data.batchId
+                    }, {
+                        $set: {
+                            finishedAt: data.finishedAt,
+                            batchSize: data.batchSize
+                        }
+                    });
+
+                break;
+            }
         case 'input':
             {
                 return {
@@ -252,3 +301,4 @@ module.exports.getDb = getDb;
 module.exports.saveToDb = saveToDb;
 module.exports.initDb = initDb;
 module.exports.getInputRange = getInputRange;
+module.exports.getScrapeIds = getScrapeIds;
