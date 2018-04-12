@@ -12,19 +12,16 @@ const getQuotes = async (page, db, scrapeId) => {
     };
 
     const waitForLoad = async () => {
-        do {
-            try {
-                await page.waitFor(2000); // to not bash CPU
-                await page.click(selectors.loadingDialog);
-            } catch (error) {
-                await page.waitFor(2000); // wait for loading modal disappear
-                return;
-            }
-        } while (true);
+        let run = true;
+
+        while (run) {
+            run = await page.$(selectors.loadingDialog);
+            await page.waitFor(1000); // to not bash CPU
+        }
     };
 
     await waitForLoad();
-
+    
     const quotes = await page.evaluate(({
             resultsTable,
             resultTableItem
