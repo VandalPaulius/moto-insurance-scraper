@@ -67,7 +67,9 @@ const initialInputValues = {
                 isElectric: false,
                 engineCC: '125'
             },
-            bike: 'HONDA CBF 125, 2008 onwards, 124cc, Manual, Petrol, Dual-Purpose' // as in the list
+            bike: {
+                text: 'HONDA CBF 125, 2008 onwards, 124cc, Manual, Petrol, Dual-Purpose' // as in the list
+            }
         },
         coverDetails: {
             coverType: {
