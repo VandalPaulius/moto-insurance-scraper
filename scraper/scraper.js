@@ -36,7 +36,7 @@ const scrape = async ({
         ) // populate database with input ranges for one scrape
     }
    
-    const quotes = []
+    let quotes = []
 
     const page = await browser.newPage();
 
@@ -111,7 +111,7 @@ const scrape = async ({
     if (!scrapeOptions) {
         await utils.timing.loaded(page, loadTime);
         console.log(`${scrapeId}: starting 'getQuotes'`);
-        const quotes = await navigation.quotes.getQuotes(
+        quotes = await navigation.quotes.getQuotes(
             page,
             utils.database,
             scrapeId

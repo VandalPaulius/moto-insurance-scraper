@@ -261,7 +261,7 @@ const dbReducer = async (db, {type, data}) => {
         case 'SCRAPE_QUOTES__SAVE_STARTED_DATE':
             {
                 await db
-                    .collection('SCRAPE_OPTIONS')
+                    .collection('SCRAPES')
                     .update({
                         _id: data.scrapeId
                     }, {
@@ -275,7 +275,7 @@ const dbReducer = async (db, {type, data}) => {
         case 'SCRAPE_QUOTES__SAVE_FINISHED_DATE':
             {
                 await db
-                    .collection('SCRAPE_OPTIONS')
+                    .collection('SCRAPES')
                     .update({
                         _id: data.scrapeId
                     }, {
@@ -289,7 +289,7 @@ const dbReducer = async (db, {type, data}) => {
         case 'SCRAPE_QUOTES__SAVE_QUOTES':
             {
                 await db
-                    .collection('SCRAPE_OPTIONS')
+                    .collection('SCRAPES')
                     .update({
                         _id: data.scrapeId
                     }, {
