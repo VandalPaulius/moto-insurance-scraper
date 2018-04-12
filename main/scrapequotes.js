@@ -110,6 +110,7 @@ const scrapeQuotes = async (db, headless = false) => {
 
         for (let i = 0; i < retries; i++) {
             let browser = {};
+            let tryCount = i + 1;
     
             try {
                 let slowMo = 20;
@@ -130,7 +131,7 @@ const scrapeQuotes = async (db, headless = false) => {
                     browser,
                     scrapeId,
                     db,
-                    tryCount: i
+                    tryCount
                 });
     
                 await browser.close();
@@ -139,7 +140,7 @@ const scrapeQuotes = async (db, headless = false) => {
                 try {
                     await browser.close();
                 } catch (err) {
-                    console.error(`${scrapeId} Try ${i}: Cannot close browser.`);
+                    console.error(`${scrapeId} Try ${tryCount}: Cannot close browser.`);
                 };
                 
                 let message = '';
@@ -152,8 +153,8 @@ const scrapeQuotes = async (db, headless = false) => {
                     shouldBreak = true;
                 }
     
-                console.error(`${scrapeId} Try ${i}: Failed to scrape quotes! ${message}`);
-                console.error(`${scrapeId} Try ${i}: Error: ${error}`);
+                console.error(`${scrapeId} Try ${tryCount}: Failed to scrape quotes! ${message}`);
+                console.error(`${scrapeId} Try ${tryCount}: Error: ${error}`);
                 if (shouldBreak) {
                     break;
                 }
