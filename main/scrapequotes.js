@@ -38,7 +38,16 @@ const scrape = async ({
     });
     console.log(`${scrapeId} Try ${tryCount}: Input values got.`);
 
-    // TODO: save started at
+    await utils.database.saveToDb(
+            db,
+                {
+                type: 'SCRAPE_QUOTES__SAVE_STARTED_DATE',
+                data: {
+                    scrapeId,
+                    startedAt: new Date
+                }
+            }
+        );
 
     await scraper.scrape({
         scrapeId,
@@ -49,27 +58,27 @@ const scrape = async ({
     }).then(async ({ quotes, scrapeId }) => {
         console.log(`${scrapeId} Try ${tryCount}: Quote scraping completed successfully.`);
         console.log(`${scrapeId} Try ${tryCount}: Saving quotes to database.`);
-        // await utils.database.saveToDb(
-        //     db,
-        //         {
-        //         type: 'SCRAPE_QUOTES__SAVE_QUOTES',
-        //         data: {
-        //             scrapeId,
-        //             quotes
-        //         }
-        //     }
-        // );
+        await utils.database.saveToDb(
+            db,
+                {
+                type: 'SCRAPE_QUOTES__SAVE_QUOTES',
+                data: {
+                    scrapeId,
+                    quotes
+                }
+            }
+        );
 
-        // await utils.database.saveToDb(
-        //     db,
-        //         {
-        //         type: 'SCRAPE_QUOTES__SAVE_FINISHED_DATE',
-        //         data: {
-        //             scrapeId,
-        //             finishedAt: new Date
-        //         }
-        //     }
-        // );
+        await utils.database.saveToDb(
+            db,
+                {
+                type: 'SCRAPE_QUOTES__SAVE_FINISHED_DATE',
+                data: {
+                    scrapeId,
+                    finishedAt: new Date
+                }
+            }
+        );
         console.log(`${scrapeId} Try ${tryCount}: Quote saving finished successfully`);
     });
 }

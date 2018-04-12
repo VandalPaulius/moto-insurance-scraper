@@ -258,6 +258,48 @@ const dbReducer = async (db, {type, data}) => {
 
                 break;
             }
+        case 'SCRAPE_QUOTES__SAVE_STARTED_DATE':
+            {
+                await db
+                    .collection('SCRAPE_OPTIONS')
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            startedAt: data.startedAt
+                        }
+                    });
+
+                break;
+            }
+        case 'SCRAPE_QUOTES__SAVE_FINISHED_DATE':
+            {
+                await db
+                    .collection('SCRAPE_OPTIONS')
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            finishedAt: data.finishedAt
+                        }
+                    });
+
+                break;
+            }
+        case 'SCRAPE_QUOTES__SAVE_QUOTES':
+            {
+                await db
+                    .collection('SCRAPE_OPTIONS')
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            quotes: data.quotes
+                        }
+                    });
+
+                break;
+            }
         case 'input':
             {
                 return {
