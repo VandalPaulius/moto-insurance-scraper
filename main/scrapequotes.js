@@ -38,6 +38,8 @@ const scrape = async ({
     });
     console.log(`${scrapeId} Try ${tryCount}: Input values got.`);
 
+    // TODO: save started at
+
     await scraper.scrape({
         scrapeId,
         inputRange,

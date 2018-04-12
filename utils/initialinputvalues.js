@@ -35,16 +35,33 @@ const initialInputValues = {
             }
         },
         addressDetails: {
-            postCode: 'SK4 2LZ',
-            overNightPostCode: 'SK4 2LC',
-            mainPhone: '07954463999',
-            additionalPhone: '07954463991',
+            postCode: {
+                value: 'SK4 2LZ',
+                example: 'SK4 2LZ'
+            },
+            overNightPostCode: {
+                value: 'SK4 2LZ',
+                example: 'SK4 2LZ'
+            },
+            mainPhone: {
+                value: '07954463999',
+                example: '07954463999'
+            },
+            additionalPhone: {
+                value: '',
+                example: '07954463991'
+            },
             keptAtMainAddress: true,
-            address: '285 Green Ln, Stockport'
+            address: {
+                value: '285 Green Ln, Stockport',
+                example: '285 Green Ln, Stockport'
+            }
         },
         bikeDetails: {
             knowRegNumber: false,
-            bikeMake: 'Honda',
+            bikeMake: {
+                value: 'Honda'
+            },
             manufactureYear: '2014',
             engineSize: {
                 isElectric: false,
