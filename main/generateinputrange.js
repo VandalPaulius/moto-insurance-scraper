@@ -6,17 +6,19 @@ const PromiseQueue = require('promise-queue');
 const flatten = (scrapeOptions, name) => {
     let flatOptions = {};
 
-    Object.keys(scrapeOptions).map((optionKey) => {
-        if (typeof scrapeOptions[optionKey] === 'object' && !(scrapeOptions[optionKey] instanceof Array)) { // are you an object?
-            const flatObj = flatten(scrapeOptions[optionKey], `${name}_${optionKey}`);
-            flatOptions = {
-                ...flatOptions,
-                ...flatObj
+    Object
+        .keys(scrapeOptions)
+        .map((optionKey) => {
+            if (typeof scrapeOptions[optionKey] === 'object' && !(scrapeOptions[optionKey]instanceof Array)) { // are you an object?
+                const flatObj = flatten(scrapeOptions[optionKey], `${name}_${optionKey}`);
+                flatOptions = {
+                    ...flatOptions,
+                    ...flatObj
+                }
+            } else {
+                flatOptions[`${name}_${optionKey}`] = scrapeOptions[optionKey];
             }
-        } else {
-            flatOptions[`${name}_${optionKey}`] = scrapeOptions[optionKey];
-        }
-    })
+        })
 
     return flatOptions;
 }
@@ -24,290 +26,107 @@ const flatten = (scrapeOptions, name) => {
 const generateRanges = (givenOptions) => {
     let options = {};
 
-    Object.keys(givenOptions).map((optionKey) => {
-        if (typeof givenOptions[optionKey] === 'object'
-            && !(givenOptions[optionKey] instanceof Array)
-        ) {
-            if (givenOptions[optionKey].from && givenOptions[optionKey].to) {
-                options = {
-                    ...options,
-                    [optionKey]: utils.helpers.getNumberList(
-                        givenOptions[optionKey].from,
-                        givenOptions[optionKey].to
-                    )
+    Object
+        .keys(givenOptions)
+        .map((optionKey) => {
+            if (typeof givenOptions[optionKey] === 'object' && !(givenOptions[optionKey]instanceof Array)) {
+                if (givenOptions[optionKey].from && givenOptions[optionKey].to) {
+                    options = {
+                        ...options,
+                        [optionKey]: utils
+                            .helpers
+                            .getNumberList(givenOptions[optionKey].from, givenOptions[optionKey].to)
+                    }
+                } else {
+                    options = {
+                        ...options,
+                        [optionKey]: generateRanges(givenOptions[optionKey])
+                    }
                 }
             } else {
-                options = {
-                    ...options,
-                    [optionKey]: generateRanges(givenOptions[optionKey])
-                }
+                options[optionKey] = givenOptions[optionKey];
             }
-        } else {
-            options[optionKey] = givenOptions[optionKey];
-        }
-    })
+        })
 
     return options;
 }
 
-const saveInputRangeToDb = async ({
-    batchId,
-    db,
-    inputRange,
-    scrapeId
-}) => {
-    await utils.database.saveToDb(
-        db,
-        {
+const saveInputRangeToDb = async({batchId, db, inputRange, scrapeId}) => {
+    await utils
+        .database
+        .saveToDb(db, {
             type: 'generateInputSaveInputRange',
             data: {
                 batchId,
                 inputRange,
                 scrapeId
             }
-        }
-    );
+        });
 }
 
-// const mapToObject = (inputRangeRaw, ) => {
-//     const toObj = (objectifiedOptions, key) => {
-//         if (!objectifiedOptions[key]) {
-//             objectifiedOptions = {
-//                 ...objectifiedOptions,
-//                 [key]: toObj(objectifiedOptions, ) // not done
-//             };
-//         }
-
-//     }
-
-//     let objectifiedOptions = {};
-
-//     return Object.keys(inputRangeRaw).map((keyRaw) => {
-//         const keyParts = keyRaw.split('_').filter((key, index) => {
-//             if (index) {
-//                 return key;
-//             }
-//         });
-
-//         keyParts.map((key, index) => toObj)
-
-//         const stuff = '';
-//     });
-// }
-
-
-// const mapToObject = (inputRangeRaw, ) => {
-
-
-//     let objectifiedOptions.asdasd = {};
-//     let tempObj = {}
-//     objectifiedOptions['asdasd']
-
-//     return Object.keys(inputRangeRaw).map((keyRaw) => {
-//         const keyParts = keyRaw.split('_').filter((key, index) => {
-//             if (index) {
-//                 return key;
-//             }
-//         });
-
-//         for (let i = 0; i < keyParts.length; i++) {
-//             tempObj = objectifiedOptions[keyParts[i]] // =  toObj(keyParts, startIndex, objectifiedOptions)
-//         }
-
-//         //keyParts.map((key, index) => toObj)
-
-//         const stuff = '';
-//     });
-// }
-
-
-
-
-
-// const mapToObject = (inputRangeRaw) => {
-//     const toObj = ({
-//         keyRaw,
-//         keyParts,
-//         startIndex,
-//         objectifiedOptions
-//     }) => {
-//         // if (startIndex >= keyParts.length) {
-//         //     return objectifiedOptions = inputRangeRaw[keyRaw];
-//         // } else {
-//         //     startIndex = startIndex + 1;
-
-//         //     return toObj({
-//         //         keyRaw,
-//         //         keyParts,
-//         //         startIndex,
-//         //         objectifiedOptions: objectifiedOptions[keyParts[startIndex]]
-//         //     })
-//         // }
-//         return 'adasd'
-//     }
-
-//     let objectifiedOptions = {};
-//     let startIndex = 0;
-
-//     const stuff = Object.keys(inputRangeRaw).map((keyRaw) => {
-//         const keyParts = keyRaw.split('_').filter((key, index) => {
-//             if (index) {
-//                 return key;
-//             }
-//         });
-
-//         return toObj({
-//             keyRaw,
-//             keyParts,
-//             startIndex,
-//             objectifiedOptions
-//         })
-
-//     });
-
-//     console.log('stuff', stuff)
-
-//     //return stuff;
-// }
-
-function assign(obj, keyPath, value) {
-    const lastKeyIndex = keyPath.length-1;
-    for (var i = 0; i < lastKeyIndex; ++ i) {
-      const key = keyPath[i];
-      if (!(key in obj))
-        obj[key] = {}
-      obj = obj[key];
-    }
-    obj[keyPath[lastKeyIndex]] = value;
- }
-
- function isObject(item) {
+const isObject = (item) => {
     return (item && typeof item === 'object' && !Array.isArray(item));
-  }
+}
 
- function mergeDeep(target, ...sources) {
-    if (!sources.length) return target;
+const mergeDeep = (target, ...sources) => { // credits Salakar @ StackOverflow
+    if (!sources.length) 
+        return target;
     const source = sources.shift();
-  
+
     if (isObject(target) && isObject(source)) {
-      for (const key in source) {
-        if (isObject(source[key])) {
-          if (!target[key]) Object.assign(target, { [key]: {} });
-          mergeDeep(target[key], source[key]);
-        } else {
-          Object.assign(target, { [key]: source[key] });
+        for (const key in source) {
+            if (isObject(source[key])) {
+                if (!target[key]) 
+                    Object.assign(target, {[key]: {}});
+                mergeDeep(target[key], source[key]);
+            } else {
+                Object.assign(target, {[key]: source[key]});
+            }
         }
-      }
     }
-  
+
     return mergeDeep(target, ...sources);
-  }
-
-// const mapToObject = (inputRangeRaw) => {
-
-
-//     let objectifiedOptions = {};
-//     const objectArr = []
-//     let merged = {};
-    
-
-//     Object.keys(inputRangeRaw).map((keyRaw) => {
-//         const keyParts = keyRaw.split('_').filter((key, index) => {
-//             if (index) {
-//                 return key;
-//             }
-//         });
-
-//         const tempObj = {};
-
-//         assign(tempObj, keyParts, inputRangeRaw[keyRaw]) // kinda works
-
-//         merged = mergeDeep(objectifiedOptions, assign(tempObj, keyParts, inputRangeRaw[keyRaw]))
-        
-
-//         //objectArr.push(tempObj)
-
-//         /*let tempObj = {
-//             [keyParts[0]]: {}
-//         }*/
-
-//         /*console.log()
-//         for (let i = 1; i < keyParts.length; i++) {
-//             if (i + 1 === keyParts.length) {
-//                 tempObj[keyParts[i-1]] = {
-//                     [keyParts[i]]: inputRangeRaw[keyRaw]
-//                 }
-//             } else {
-//                 tempObj = getNestedObject(tempObj, [keyParts[i-1]])
-//                 tempObj[keyParts[i-1]] = {
-//                     [keyParts[i]]: {}
-//                 }
-                
-//             }
-//             //tempObj[keyParts[i]] = {} // =  toObj(keyParts, startIndex, objectifiedOptions)
-//         }*/
-
-//         //keyParts.map((key, index) => toObj)
-
-//         const stuff = '';
-//     });
-
-//     console.log('objectArr: ', objectArr)
-
-    
-// }
-
-
+}
 
 const mapToObject = (inputRangeRaw) => {
+    const objectArr = []
+    let inputRange = {};
 
-
-        let objectifiedOptions = {};
-        const objectArr = []
-        let merged = {};
-
-        const toObj = ({
-            index,
-            keys,
-            keyRaw
-        }) => {
-            if (index + 1 === keys.length) {
-                return {
-                    [keys[index]]: inputRangeRaw[keyRaw]
-                }
-            }
+    const toObj = ({index, keys, keyRaw}) => {
+        if (index + 1 === keys.length) {
             return {
-                [keys[index]]: toObj({
-                    index: index + 1,
-                    keys,
-                    keyRaw
-                })
+                [keys[index]]: inputRangeRaw[keyRaw]
             }
         }
-        
-    
-        Object.keys(inputRangeRaw).map((keyRaw) => {
-            const keyParts = keyRaw.split('_').filter((key, index) => {
-                if (index) {
-                    return key;
-                }
-            });
-    
-            const tempObj = {};
-            objectArr.push(toObj({
-                index: 0,
-                keys: keyParts,
+        return {
+            [keys[index]]: toObj({
+                index: index + 1,
+                keys,
                 keyRaw
-            }))
-    
-
-    
-            const stuff = '';
-        });
-    
-        console.log('objectArr: ', objectArr)
+            })
+        }
     }
 
+    Object
+        .keys(inputRangeRaw)
+        .map((keyRaw) => {
+            const keyParts = keyRaw
+                .split('_')
+                .filter((key, index) => {
+                    if (index) {
+                        return key;
+                    }
+                });
+
+            objectArr.push(toObj({index: 0, keys: keyParts, keyRaw}))
+        });
+
+    objectArr.map((inputRangeBit, index) => {
+        inputRange = mergeDeep(inputRange, inputRangeBit);
+    })
+
+    return inputRange;
+}
 
 const generateCombinations = ({
     options,
@@ -324,7 +143,7 @@ const generateCombinations = ({
     let vals = options[optionKey];
 
     if (!(vals instanceof Array)) { // check for oddities
-        vals = [ vals ];
+        vals = [vals];
     }
 
     for (let i = 0; i < vals.length; i++) {
@@ -343,18 +162,11 @@ const generateCombinations = ({
             });
         } else {
             const inputRangeRaw = JSON.parse(JSON.stringify(current)); // object deep copy
-            
-            const inputRange = inputRangeRaw; // map to object
-            mapToObject(inputRangeRaw); // dev
-
+            const inputRange = mapToObject(inputRangeRaw);
             const scrapeId = uuidv1();
+
             // add to Promise queue to prevent premature process close
-            promiseQueue.add(() => saveInputRangeToDb({
-                batchId,
-                db,
-                inputRange,
-                scrapeId
-            }));
+            promiseQueue.add(() => saveInputRangeToDb({batchId, db, inputRange, scrapeId}));
 
             resultCount.push('sucess');
 
@@ -365,21 +177,13 @@ const generateCombinations = ({
     }
 
     if (results) {
-        return {
-            results,
-            resultCount
-        }
+        return {results, resultCount}
     } else {
         return resultCount;
     }
 }
 
-const generate = async ({
-    db,
-    scrapeOptions,
-    batchId,
-    promiseQueue
-}) => {
+const generate = async({db, scrapeOptions, batchId, promiseQueue}) => {
 
     let outputOptions = [];
     let scrapeOptionsInternal = JSON.parse(JSON.stringify(scrapeOptions)); // deep copy
@@ -399,15 +203,11 @@ const generate = async ({
             db,
             promiseQueue // add
         });
-        // // combinations quality control [start]
-        // const combinationsNoDuplicates = utils.helpers
-        //     .removeArrayDuplicates(combinations);
-        // const combinationsSizeControl = combinationsNoDuplicates.filter((option) => {
-        //     if (Object.keys(option).length === Object.keys(flatScrapeOptionsObj).length) {
-        //         return option
-        //     }
-        // })
-        // // combinations quality control [end]
+        // // combinations quality control [start] const combinationsNoDuplicates =
+        // utils.helpers     .removeArrayDuplicates(combinations); const
+        // combinationsSizeControl = combinationsNoDuplicates.filter((option) => {
+        // if (Object.keys(option).length === Object.keys(flatScrapeOptionsObj).length)
+        // {         return option     } }) // combinations quality control [end]
     } catch (err) {
         return false;
     }
@@ -415,7 +215,7 @@ const generate = async ({
     return resultCountArr.length;
 }
 
-const generateInputRange = async (db) => {
+const generateInputRange = async(db) => {
     const cwd = require('cwd');
     const promiseQueue = new PromiseQueue(Infinity, Infinity);
     const batchId = uuidv1();
@@ -425,33 +225,28 @@ const generateInputRange = async (db) => {
     let batchSize;
     try {
         console.log('Getting data from [root]/input/inputRange.json.')
-        scrapeOptions = require(cwd('input/inputRange.json'));        
+        scrapeOptions = require(cwd('input/inputRange.json'));
     } catch (err) {
         error = err;
     }
 
     if (!scrapeOptions || error) {
-        console.error(`Cannot get data.${error ? ` Error: ${error}`: ''}`)
+        console.error(`Cannot get data.${error
+            ? ` Error: ${error}`
+            : ''}`)
     } else {
-        
 
-        await utils.database.saveToDb(
-            db,
-            {
+        await utils
+            .database
+            .saveToDb(db, {
                 type: 'generateInputRangeStarted',
                 data: {
                     batchId,
                     startedAt: new Date()
                 }
-            }
-        );
+            });
 
-        batchSize = await generate({
-            db,
-            scrapeOptions,
-            batchId,
-            promiseQueue
-        });
+        batchSize = await generate({db, scrapeOptions, batchId, promiseQueue});
 
         if (!batchSize) {
             console.error(`Finished unsuccessfully.`)
@@ -459,20 +254,18 @@ const generateInputRange = async (db) => {
         }
     }
 
-    do {} while ( promiseQueue.getPendingLength() > 1
-        && promiseQueue.getQueueLength() > 1 );
+    do {} while (promiseQueue.getPendingLength() > 1 && promiseQueue.getQueueLength() > 1);
 
-    await utils.database.saveToDb(
-        db,
-        {
+    await utils
+        .database
+        .saveToDb(db, {
             type: 'generateInputRangeFinished',
             data: {
                 batchId,
                 finishedAt: new Date(),
                 batchSize
             }
-        }
-    );
+        });
 
     console.log('Finished successfully');
 }
