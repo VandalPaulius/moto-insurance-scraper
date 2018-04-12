@@ -19,7 +19,7 @@ const dbToJson = async (db) => {
     });
 
     console.log('Getting data from database.')
-    const scrapeOptions = await utils.database.getInputRange(
+    const scrapeOptions = await utils.database.getScrapeOptionsInputRange(
         db,
         { ...runArguments }
     );

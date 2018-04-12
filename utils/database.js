@@ -30,7 +30,7 @@ const getDb = () => {
     return database;
 }
 
-const getInputRange = async (
+const getScrapeOptionsInputRange = async (
     db, {
         scrapeId,
         getLast
@@ -63,6 +63,19 @@ const getInputRange = async (
 
         return scrapeOptions;
     }
+}
+
+const getInputRange = async ({
+    db,
+    scrapeId
+}) => {
+    const inputRangeContainer = await db
+        .collection('SCRAPES')
+        .find({ _id: scrapeId })
+        .project({ _id: 0, inputRange: 1 })
+        .toArray();
+
+    return inputRangeContainer[0].inputRange;
 }
 
 const getScrapeIds = async (
@@ -300,5 +313,6 @@ const saveToDb = async(db, {type, data}) => {
 module.exports.getDb = getDb;
 module.exports.saveToDb = saveToDb;
 module.exports.initDb = initDb;
-module.exports.getInputRange = getInputRange;
+module.exports.getScrapeOptionsInputRange = getScrapeOptionsInputRange;
 module.exports.getScrapeIds = getScrapeIds;
+module.exports.getInputRange = getInputRange;

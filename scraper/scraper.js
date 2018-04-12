@@ -12,8 +12,6 @@ const scrape = async ({
     db,
     browser
 }) => {
-    console.log('scrape it');
-
     if (scrapeOptions) {
         await utils.database.saveToDb(
             db,
