@@ -28,10 +28,12 @@ OPTIONS_SCRAPE_RETRIES=5
 
 ### HOW TO: scrape options ###
 
-1. Install MongoDb
-2. Edit `[root]/mongo_db/start_mongodb.bat` file with desired database location
-3. Run `npm install`
-4. Run `npm run scrape-options` to scrape option data to database
+1. Install `Node.js`
+2. Install `NPM`
+3. Install `MongoDb`
+4. Edit `[root]/mongo_db/start_mongodb.bat` file with desired database location
+5. Run `npm install`
+6. Run `npm run scrape-options` to scrape option data to database
 
 ### HOW TO: save options to json file ###
 
