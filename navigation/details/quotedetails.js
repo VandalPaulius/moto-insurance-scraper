@@ -595,7 +595,7 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
                 to: '3000'
             }
         },
-        bikes: []
+        bike: []
     };
 
     try {
@@ -825,10 +825,8 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
 
         const bikesTempFlattened = flatten(bikesTemp);
 
-        bikeDetailsOptions.bikes.push({
-            brand: manufacturer,
-            bikes: utils.helpers.removeArrayDuplicates(bikesTempFlattened)
-        })
+        utils.helpers.removeArrayDuplicates(bikesTempFlattened)
+            .map(bike => bikeDetailsOptions.bike.push(bike));
 
         if (bikeDetailsOptions.bikeMakerScrapeCap) {
             if ((bikeDetailsOptions.bikeMakerScrapeCap - 1) === makerIndex) {
