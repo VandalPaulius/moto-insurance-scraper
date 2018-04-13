@@ -123,7 +123,7 @@ const scrapeQuotes = async (db, headless = false) => {
     
                 browser = await puppeteer.launch({
                     headless: headless, // dev = false, prod = true,
-                    slowMo: slowMo // for fully operational mode
+                    slowMo: slowMo
                 });
     
                 await scrape({
