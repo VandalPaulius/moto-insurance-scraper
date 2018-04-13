@@ -179,27 +179,25 @@ const coverInfoScrapeOptions = async (page, db, scrapeId, inputRange) => {
     // options scrape
 
     const options = {
-        coverInfo: {
-            plusDays: {
-                from: '0',
-                to: '30'
-            },
-            renewalPrice: {
-                from: '0',
-                to: '2000'
-            },
-            voluntaryExcess: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.voluntaryExcessDropdown)),
-            annualMileage: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.annualMileageDropdown)),
-            payFull: [
-                true,
-                false
-            ],
-            declinedOrSpecialTerms: [
-                true,
-                false
-            ]
-        }
-    }
+        plusDays: {
+            from: '0',
+            to: '30'
+        },
+        renewalPrice: {
+            from: '0',
+            to: '2000'
+        },
+        voluntaryExcess: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.voluntaryExcessDropdown)),
+        annualMileage: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.annualMileageDropdown)),
+        payFull: [
+            true,
+            false
+        ],
+        declinedOrSpecialTerms: [
+            true,
+            false
+        ]
+    };
 
     return options;
 }

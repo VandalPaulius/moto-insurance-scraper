@@ -2,10 +2,10 @@ const scrapeOptions = async (db, headless = true) => {
     const cwd = require('cwd');
     const scraper = require(cwd('scraper'));
     const utils = require(cwd('utils'));
-    const uuidv1 = require('uuid/v1');
+    const uuidv4 = require('uuid/v4');
     const puppeteer = require('puppeteer');
 
-    const scrapeId = uuidv1();
+    const scrapeId = uuidv4();
     const inputRange = utils.initialInputValues.initialInputValues;
     const startedAt = new Date;
 
