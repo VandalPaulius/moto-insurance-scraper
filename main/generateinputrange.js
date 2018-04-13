@@ -1,4 +1,4 @@
-const uuidv1 = require('uuid/v1');
+const uuidv4 = require('uuid/v4');
 const cwd = require('cwd');
 const utils = require(cwd('utils'));
 const PromiseQueue = require('promise-queue');
@@ -163,7 +163,7 @@ const generateCombinations = ({
         } else {
             const inputRangeRaw = JSON.parse(JSON.stringify(current)); // object deep copy
             const inputRange = mapToObject(inputRangeRaw);
-            const scrapeId = uuidv1();
+            const scrapeId = uuidv4();
 
             // add to Promise queue to prevent premature process close
             promiseQueue.add(() => saveInputRangeToDb({batchId, db, inputRange, scrapeId}));
@@ -218,7 +218,7 @@ const generate = async({db, scrapeOptions, batchId, promiseQueue}) => {
 const generateInputRange = async(db) => {
     const cwd = require('cwd');
     const promiseQueue = new PromiseQueue(Infinity, Infinity);
-    const batchId = uuidv1();
+    const batchId = uuidv4();
 
     let scrapeOptions;
     let error;

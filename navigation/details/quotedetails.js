@@ -110,7 +110,7 @@ const address = async (page, db, scrapeId, inputRange) => {
     await utils.helpers.typeClean(
         page,
         selectors.postCode,
-        inputRange.postCode
+        inputRange.postCode.value
     )
 
     await page.click(selectors.findAddressButton);
@@ -162,19 +162,19 @@ const address = async (page, db, scrapeId, inputRange) => {
         await page.select(selector, address.value);
     }
 
-    await selectAddress(page, selectors.addressDropdown, inputRange.address);
+    await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
 
     await utils.helpers.typeClean(
         page,
         selectors.mainPhone,
-        inputRange.mainPhone
+        inputRange.mainPhone.value
     );
 
     if (inputRange.additionalPhone) {
         await utils.helpers.typeClean(
             page,
             selectors.additionalPhone,
-            inputRange.additionalPhone
+            inputRange.additionalPhone.value
         );
     }
     
@@ -186,7 +186,7 @@ const address = async (page, db, scrapeId, inputRange) => {
         await utils.helpers.typeClean(
             page,
             selectors.overNightPostCode,
-            inputRange.overNightPostCode
+            inputRange.overNightPostCode.value
         );
     }
 };
@@ -256,7 +256,7 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
         await page.click(selectors.knowRegNumber.no);
     }
 
-    await selectMake(page, selectors.bikeMake, inputRange.bikeMake);
+    await selectMake(page, selectors.bikeMake, inputRange.bikeMake.value);
 
     await utils.helpers.typeClean(
         page,
@@ -277,7 +277,7 @@ const bikeDetails = async (page, db, scrapeId, inputRange) => {
     await page.click(selectors.findVehicleButton);
     await utils.timing.loaded(page);
 
-    await selectBike(page, selectors.vehicleDropdown, inputRange.bike);
+    await selectBike(page, selectors.vehicleDropdown, inputRange.bike.text);
 };
 
 const coverDetails = async (page, db, scrapeId, inputRange) => {
@@ -420,7 +420,7 @@ const personalScrapeOptions = async (page, db, scrapeId, inputRange) => {
                 to: '2018'
             }
         },
-        employmentDropdown: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.employmentDropdown)),
+        fullTimeEmployment: utils.helpers.removePleaseSelect(await utils.helpers.getOptions(page, selectors.employmentDropdown)),
         partTimeEmploymentLess16Hrs: [
             true,
             false
@@ -452,7 +452,7 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
     await utils.helpers.typeClean(
         page,
         selectors.postCode,
-        inputRange.postCode
+        inputRange.postCode.value
     )
 
     await page.click(selectors.findAddressButton);
@@ -504,19 +504,19 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
         await page.select(selector, address.value);
     }
 
-    await selectAddress(page, selectors.addressDropdown, inputRange.address);
+    await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
 
     await utils.helpers.typeClean(
         page,
         selectors.mainPhone,
-        inputRange.mainPhone
+        inputRange.mainPhone.value
     );
 
     if (inputRange.additionalPhone) {
         await utils.helpers.typeClean(
             page,
             selectors.additionalPhone,
-            inputRange.additionalPhone
+            inputRange.additionalPhone.value
         );
     }
     
@@ -528,7 +528,7 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
         await utils.helpers.typeClean(
             page,
             selectors.overNightPostCode,
-            inputRange.overNightPostCode
+            inputRange.overNightPostCode.value
         );
     }
 
@@ -585,6 +585,9 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
             from: '1900',
             to: '2018'
         },
+        knowRegNumber: [
+            false
+        ],
         engineSize: {
             isElectric: [
                 true,
@@ -685,8 +688,6 @@ const bikeDetailsScrapeOptions = async (page, db, scrapeId, inputRange, scrapeFe
 
         return list;
     }
-
-
 
     if (inputRange.knowRegNumber) {
         await page.click(selectors.knowRegNumber.yes);
@@ -917,7 +918,6 @@ const quoteDetails = async (page, db, dbInstance, scrapeId, continueToNext, scra
             }
         );
     } else {
-
         await personal(page, db, scrapeId, inputRange.quoteDetails.personalDetails);
         await address(page, db, scrapeId, inputRange.quoteDetails.addressDetails);
         await bikeDetails(page, db, scrapeId, inputRange.quoteDetails.bikeDetails);

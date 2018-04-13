@@ -12,19 +12,65 @@ const getQuotes = async (page, db, scrapeId) => {
     };
 
     const waitForLoad = async () => {
-        do {
-            try {
-                await page.waitFor(2000); // to not bash CPU
-                await page.click(selectors.loadingDialog);
-            } catch (error) {
-                await page.waitFor(2000); // wait for loading modal disappear
-                return;
-            }
-        } while (true);
+        let run = true;
+
+        while (run) {
+            run = await page.$(selectors.loadingDialog);
+            await page.waitFor(1000); // to not bash CPU
+        }
     };
 
-    await waitForLoad();
+    const clearQuoteNumbers = (quotes) => {
+        const clearNumber = (rawString) => {
+            const outputStringRaw = [];
+            let number = false;
 
+            rawString.split('').map((part) => {
+                if (number) {
+                    outputStringRaw.push(part);
+                }
+                if (part === '£') {
+                    number = true;
+                }
+            })
+
+            let outputString = outputStringRaw.filter((item, index) => {
+                if (item !== ',') {
+                    return item;
+                }
+            }).join('');
+
+            return parseFloat(outputString);
+        }
+
+        return quotes.map((quote) => {
+            if (!quote.price) {
+                return quote;
+            }
+
+            const fixedNumbersQuote = { ...quote };
+
+            if (quote.price) {
+                fixedNumbersQuote.price = {
+                    full: clearNumber(quote.price.full),
+                    excess: clearNumber(quote.price.excess)
+                }
+    
+                if (quote.price.monthly) {
+                    fixedNumbersQuote.price.monthly = {
+                        deposit: clearNumber(quote.price.monthly.deposit),
+                        total: clearNumber(quote.price.monthly.total),
+                        month: quote.price.monthly.month
+                    }
+                }
+            }
+
+            return fixedNumbersQuote;
+        })
+    }
+
+    await waitForLoad();
+    
     const quotes = await page.evaluate(({
             resultsTable,
             resultTableItem
@@ -105,7 +151,9 @@ const getQuotes = async (page, db, scrapeId) => {
         resultTableItem: selectors.resultTableItem
     });
 
-    return quotes;
+    
+
+    return clearQuoteNumbers(quotes);
 };
 
 module.exports = getQuotes;

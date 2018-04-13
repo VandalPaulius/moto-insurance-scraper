@@ -30,7 +30,7 @@ const getDb = () => {
     return database;
 }
 
-const getInputRange = async (
+const getScrapeOptionsInputRange = async (
     db, {
         scrapeId,
         getLast
@@ -62,6 +62,53 @@ const getInputRange = async (
             : {};
 
         return scrapeOptions;
+    }
+}
+
+const getInputRange = async ({
+    db,
+    scrapeId
+}) => {
+    const inputRangeContainer = await db
+        .collection('SCRAPES')
+        .find({ _id: scrapeId })
+        .project({ _id: 0, inputRange: 1 })
+        .toArray();
+
+    return inputRangeContainer[0].inputRange;
+}
+
+const getScrapeIds = async (
+    db,
+    {
+        batchId,
+        getLast
+    }
+) => {
+    if (batchId) {
+        const scrapeIds = await db
+            .collection('SCRAPES')
+            .find({ batchId })
+            .project({ _id: 1 })
+            .toArray();
+
+        return scrapeIds.map(container => container._id);
+    } else {
+        const lastBatchId = await db
+            .collection('BATCHES')
+            .find({})
+            .sort({ startedAt: -1 })
+            .limit(1)
+            .project({ _id: 1 })
+            .toArray();
+
+        const scrapeIds = await db
+            .collection('SCRAPES')
+            .find({ batchId: lastBatchId[0]._id })
+            .project({ _id: 1 })
+            .toArray();
+
+        return scrapeIds.map(container => container._id);
     }
 }
 
@@ -196,6 +243,63 @@ const dbReducer = async (db, {type, data}) => {
                     }
                 };
             }
+        case 'SCRAPE_QUOTES__GET_LAST__BATCH_ID':
+            {
+                await db
+                    .collection('BATCHES')
+                    .update({
+                        _id: data.batchId
+                    }, {
+                        $set: {
+                            finishedAt: data.finishedAt,
+                            batchSize: data.batchSize
+                        }
+                    });
+
+                break;
+            }
+        case 'SCRAPE_QUOTES__SAVE_STARTED_DATE':
+            {
+                await db
+                    .collection('SCRAPES')
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            startedAt: data.startedAt
+                        }
+                    });
+
+                break;
+            }
+        case 'SCRAPE_QUOTES__SAVE_FINISHED_DATE':
+            {
+                await db
+                    .collection('SCRAPES')
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            finishedAt: data.finishedAt
+                        }
+                    });
+
+                break;
+            }
+        case 'SCRAPE_QUOTES__SAVE_QUOTES':
+            {
+                await db
+                    .collection('SCRAPES')
+                    .update({
+                        _id: data.scrapeId
+                    }, {
+                        $set: {
+                            quotes: data.quotes
+                        }
+                    });
+
+                break;
+            }
         case 'input':
             {
                 return {
@@ -251,4 +355,6 @@ const saveToDb = async(db, {type, data}) => {
 module.exports.getDb = getDb;
 module.exports.saveToDb = saveToDb;
 module.exports.initDb = initDb;
+module.exports.getScrapeOptionsInputRange = getScrapeOptionsInputRange;
+module.exports.getScrapeIds = getScrapeIds;
 module.exports.getInputRange = getInputRange;
