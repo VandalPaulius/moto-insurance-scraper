@@ -1,9 +1,10 @@
 // optional config to narrow bike option scraping
 module.exports = {
-    bikeMakerScrapeCap: 5,
+    //bikeMakerScrapeCap: 5,
+    bikeMakerScrapeCap: null,
     manufactureYear: {
-        from: '2014',
-        to: '2015'
+        from: '1990',
+        to: '2018'
     },
     engineSize: {
         isElectric: [
