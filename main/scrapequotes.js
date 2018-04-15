@@ -83,7 +83,7 @@ const scrape = async ({
     });
 }
 
-const scrapeQuotes = async (db, headless = false) => {
+const scrapeQuotes = async (db, headless = true) => {
     const runArguments = getRunArguments();
 
     console.log('Getting scrapeIds from database.');
