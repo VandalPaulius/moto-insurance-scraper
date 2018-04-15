@@ -13,6 +13,8 @@ const getQuotes = async (page, db, scrapeId) => {
 
     const waitForLoad = async () => {
         let run = true;
+        
+        await page.waitFor(1000); // to not bash CPU
 
         while (run) {
             run = await page.$(selectors.loadingDialog);
@@ -150,8 +152,6 @@ const getQuotes = async (page, db, scrapeId) => {
         resultsTable: selectors.resultsTable,
         resultTableItem: selectors.resultTableItem
     });
-
-    
 
     return clearQuoteNumbers(quotes);
 };

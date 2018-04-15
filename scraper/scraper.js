@@ -69,7 +69,7 @@ const scrape = async ({
         true,
         scrapeOptions,
         inputRange,
-        true // scrapeFewBikes :dev @ scrapeOptions
+        false // scrapeFewBikes :dev @ scrapeOptions
     );
     console.log(`${scrapeId}: finished 'quoteDetails'`);
     await utils.timing.loaded(page, loadTime);
