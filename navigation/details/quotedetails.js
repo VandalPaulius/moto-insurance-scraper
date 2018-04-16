@@ -110,7 +110,7 @@ const address = async (page, db, scrapeId, inputRange) => {
     await utils.helpers.typeClean(
         page,
         selectors.postCode,
-        inputRange.postCode.value
+        inputRange.address.postCode.value
     )
 
     await page.click(selectors.findAddressButton);
@@ -162,7 +162,7 @@ const address = async (page, db, scrapeId, inputRange) => {
         await page.select(selector, address.value); // this breaks
     }
 
-    // await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
+    // await selectAddress(page, selectors.addressDropdown, inputRange.address.address.value);
 
     await utils.helpers.typeClean(
         page,
@@ -452,7 +452,7 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
     await utils.helpers.typeClean(
         page,
         selectors.postCode,
-        inputRange.postCode.value
+        inputRange.address.postCode.value
     )
 
     await page.click(selectors.findAddressButton);
@@ -504,7 +504,7 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
         await page.select(selector, address.value);
     }
 
-    await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
+    await selectAddress(page, selectors.addressDropdown, inputRange.address.address.value);
 
     await utils.helpers.typeClean(
         page,
@@ -534,10 +534,18 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
 
     // option scrape
     const addressDetails = {
-        postCode: {
-            example: 'SK4 2LZ',
-            value: ['']
-        },
+        address: [
+            {
+                postCode: {
+                    example: 'SK4 2LZ',
+                    value: ''
+                },
+                address: {
+                    example: '285 Green Ln, Stockport',
+                    value: ''
+                }
+            }
+        ],
         overNightPostCode: {
             example: 'SK4 2LC',
             value: ['']
@@ -548,10 +556,6 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
         },
         additionalPhone: {
             example: '07954463991',
-            value: ['']
-        },
-        address: {
-            example: '285 Green Ln, Stockport',
             value: ['']
         },
         keptAtMainAddress: [

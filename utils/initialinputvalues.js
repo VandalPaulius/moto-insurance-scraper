@@ -35,9 +35,15 @@ const initialInputValues = {
             }
         },
         addressDetails: {
-            postCode: {
-                value: 'SK4 2LZ',
-                example: 'SK4 2LZ'
+            address: {
+                address: {
+                    value: '285 Green Ln, Stockport',
+                    example: '285 Green Ln, Stockport'
+                },
+                postCode: {
+                    value: 'SK4 2LZ',
+                    example: 'SK4 2LZ'
+                }
             },
             overNightPostCode: {
                 value: 'SK4 2LZ',
@@ -51,11 +57,7 @@ const initialInputValues = {
                 value: '',
                 example: '07954463991'
             },
-            keptAtMainAddress: true,
-            address: {
-                value: '285 Green Ln, Stockport',
-                example: '285 Green Ln, Stockport'
-            }
+            keptAtMainAddress: true
         },
         bikeDetails: {
             knowRegNumber: false,
