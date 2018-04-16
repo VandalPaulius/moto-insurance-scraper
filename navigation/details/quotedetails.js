@@ -159,10 +159,10 @@ const address = async (page, db, scrapeId, inputRange) => {
         const options = await utils.helpers.getOptions(page, selector);
         const address = findAddress(options, inputRangeAddress);
 
-        await page.select(selector, address.value);
+        await page.select(selector, address.value); // this breaks
     }
 
-    await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
+    // await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
 
     await utils.helpers.typeClean(
         page,
