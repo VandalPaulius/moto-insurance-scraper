@@ -53,10 +53,14 @@ const scrape = async ({
     console.log(`${scrapeId}: starting 'login'`);
     await navigation.main.login(page);
     await utils.timing.show(page, loadTime);
+    await utils.timing.loaded(page, loadTime);
     console.log(`${scrapeId}: finished 'login'`);
 
-    await navigation.dashboard.removeSuperfluousQuotes(page);
+    console.log(`${scrapeId}: starting unneccesary quote removal`);
+    await navigation.dashboard.removeSuperfluousQuotes(page, loadTime);
+    console.log(`${scrapeId}: finished unneccesary quote removal`);
 
+    await utils.timing.loaded(page, loadTime);
     await navigation.dashboard.newQuote(page);
 
     await utils.timing.loaded(page, loadTime);

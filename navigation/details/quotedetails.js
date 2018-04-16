@@ -104,17 +104,9 @@ const address = async (page, db, scrapeId, inputRange) => {
             yes: '#ctl00_cphBody_qsAddressDetails_qKeptOvernight_rbAnswer1',
             no: '#ctl00_cphBody_qsAddressDetails_qKeptOvernight_rbAnswer2'
         },
-        overNightPostCode: '#ctl00_cphBody_qsAddressDetails_qOvernightPostcode_tbAnswer'
+        overNightPostCode: '#ctl00_cphBody_qsAddressDetails_qOvernightPostcode_tbAnswer',
+        addressLoading: '#ctl00_cphBody_qsAddressDetails_btnAddressLookupButton_ucPleaseWait_divPleaseWait'
     }
-
-    await utils.helpers.typeClean(
-        page,
-        selectors.postCode,
-        inputRange.postCode.value
-    )
-
-    await page.click(selectors.findAddressButton);
-    await utils.timing.loaded(page);
 
     const selectAddress = async (page, selector, inputRangeAddress) => {
         const findAddress = (addresses, address) => {
@@ -139,30 +131,95 @@ const address = async (page, db, scrapeId, inputRange) => {
                 return addressItem;
             });
 
-            for (let address of addresses) {
-                let match = [];
+            let outputAddress;
+            let error;
 
-                for (let i = 0; i < addressPartsFixed.length; i++) {
-                    const pattern = new RegExp(addressPartsFixed[i], 'i');
+            try {
+                for (let address of addresses) {
+                    let match = [];
+    
+                    for (let i = 0; i < addressPartsFixed.length; i++) {
+                        const pattern = new RegExp(addressPartsFixed[i], 'i');
+    
+                        match[i] = pattern.test(address.text);
+                    }
+    
+                    const matchedCount = match.filter(item => item === true).length;
 
-                    match[i] = pattern.test(address.text);
+                    if (matchedCount === addressPartsFixed.length) {
+                        outputAddress = address;
+                        break;
+                    }
                 }
-
-                const matchedCount = match.filter(item => item === true).length;
-
-                if (matchedCount === addressPartsFixed.length) {
-                    return address;
-                }
+            } catch (err) {
+                error = err;
             }
+
+            if (error) {
+                console.error(error);
+                console.error('Error while selecting exact address. Trying approximation.');
+            }
+            
+            if (!outputAddress) {
+                outputAddress = addresses[Math.floor(addresses.length / 2)]; // if nothing matches take approximate address
+            }
+
+            return outputAddress;
+        }
+
+        const getOptions = async (page, selector) => {
+            const options = await page.evaluate((selector) => {
+                const optionList = document.querySelector(selector);
+                const optionKeys = Object.keys(optionList);
+                const options = optionKeys.map(key => {
+                    return {
+                        value: optionList[key].value,
+                        text: optionList[key].text
+                    }
+                })
+        
+                return options;
+            }, selector);
+
+            return options;
         }
 
         const options = await utils.helpers.getOptions(page, selector);
         const address = findAddress(options, inputRangeAddress);
 
-        await page.select(selector, address.value); // this breaks
+        await page.select(selector, address.value);
     }
 
-    // await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
+    const waitForLoadAddresses = async (selector) => {
+        let loading = true;
+        
+        await page.waitFor(100); // to not bash CPU
+
+        while (loading) {
+            loading = await page.evaluate((selector) => {
+                const element = document.querySelector(selector);
+                const display = element.style.display;
+
+                if (display === 'none') {
+                    return false;
+                } else {
+                    return true;
+                }
+            }, selector);
+            await page.waitFor(100); // to not bash CPU
+        }
+    };
+
+    await utils.helpers.typeClean(
+        page,
+        selectors.postCode,
+        inputRange.address.postCode.value
+    )
+
+    await page.click(selectors.findAddressButton);
+    await waitForLoadAddresses(selectors.addressLoading);
+
+    await selectAddress(page, selectors.addressDropdown, inputRange.address.address.value);
 
     await utils.helpers.typeClean(
         page,
@@ -452,7 +509,7 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
     await utils.helpers.typeClean(
         page,
         selectors.postCode,
-        inputRange.postCode.value
+        inputRange.address.postCode.value
     )
 
     await page.click(selectors.findAddressButton);
@@ -504,7 +561,7 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
         await page.select(selector, address.value);
     }
 
-    await selectAddress(page, selectors.addressDropdown, inputRange.address.value);
+    await selectAddress(page, selectors.addressDropdown, inputRange.address.address.value);
 
     await utils.helpers.typeClean(
         page,
@@ -534,10 +591,18 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
 
     // option scrape
     const addressDetails = {
-        postCode: {
-            example: 'SK4 2LZ',
-            value: ['']
-        },
+        address: [
+            {
+                postCode: {
+                    example: 'SK4 2LZ',
+                    value: ''
+                },
+                address: {
+                    example: '285 Green Ln, Stockport',
+                    value: ''
+                }
+            }
+        ],
         overNightPostCode: {
             example: 'SK4 2LC',
             value: ['']
@@ -548,10 +613,6 @@ const addressScrapeOptions = async (page, db, scrapeId, inputRange) => {
         },
         additionalPhone: {
             example: '07954463991',
-            value: ['']
-        },
-        address: {
-            example: '285 Green Ln, Stockport',
             value: ['']
         },
         keptAtMainAddress: [
