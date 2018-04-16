@@ -1,7 +1,7 @@
 const cwd = require('cwd');
 const utils = require(cwd('utils'));
 
-const removeSuperfluousQuotes = async (page) => {
+const removeSuperfluousQuotes = async (page, loadTime) => {
     const selectors = {
         motorbike: '#more-info-menu > li:nth-child(3) > div',
         deleteQuote: elementId => `#your-quotes-content > div:nth-child(${elementId}) > div > div.quote-summary-title > a`,
@@ -13,6 +13,7 @@ const removeSuperfluousQuotes = async (page) => {
     }
 
     await page.click(selectors.motorbike);
+    await utils.timing.loaded(page, loadTime);
 
     const quoteCount = await page.evaluate(quote => {
         return Object.keys(
@@ -23,9 +24,9 @@ const removeSuperfluousQuotes = async (page) => {
     if (quoteCount > 1) { // one quote should always stay
         for (let i = 0; i < (quoteCount - 1); i++) {
             await page.click(selectors.deleteQuote(4 + i)); // first quote is 4th element
-            await utils.timing.loaded(page);
+            await utils.timing.loaded(page, loadTime);
             await page.click(selectors.confirmDelete);
-            await utils.timing.loaded(page);
+            await utils.timing.loaded(page, loadTime);
         }
     }
 }
