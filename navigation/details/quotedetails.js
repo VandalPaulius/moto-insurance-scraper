@@ -160,7 +160,7 @@ const address = async (page, db, scrapeId, inputRange) => {
                 console.error('Error while selecting exact address. Trying approximation.');
             }
             
-            if (!outputAddress) {
+            if (!outputAddress || !address) {
                 outputAddress = addresses[Math.floor(addresses.length / 2)]; // if nothing matches take approximate address
             }
 
